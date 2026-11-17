@@ -1,0 +1,11 @@
+item_id,section,question_risk_if_yes,yes_indicates_risk,suggested_action,framework_source_id
+S01,atap,Atap ada kotoran hewan/debu/serasah terlihat?,True,Clean roof/catchment and prevent animal access,
+S02,atap,Material atap/cat berpotensi mengandung bahan berbahaya atau tidak diketahui?,True,Identify material; consider targeted chemical testing,
+S03,talang,Talang kotor/rusak atau tidak terlindungi dari debris?,True,Clean/repair gutter and install appropriate screen,
+S04,first_flush,Tidak ada sistem pengalihan aliran awal atau sistem rusak?,True,Consider/repair first flush and measure diversion volume,
+S05,tangki,Tutup tangki tidak rapat/terbuka?,True,Close and secure tank,
+S06,tangki,Inlet atau overflow tidak terlindungi kasa anti-serangga?,True,Install and maintain insect-proof mesh,
+S07,tangki,Tangki retak/bocor atau mudah dimasuki aliran kotor?,True,Repair/replace tank and protect from contamination,
+S08,operasi,"Air diambil dengan wadah dicelup, bukan lewat kran higienis?",True,Use protected tap and hygienic withdrawal,
+S09,operasi,Pembersihan dan perawatan rutin tidak terdokumentasi?,True,Define maintenance schedule and logs,
+S10,pengujian,Tidak ada hasil uji laboratorium relevan untuk tujuan penggunaan?,True,Classify quality as unverified; obtain relevant testing,

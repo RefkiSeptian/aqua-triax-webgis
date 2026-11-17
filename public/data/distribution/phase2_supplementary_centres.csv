@@ -1,0 +1,4 @@
+site_id,longitude,latitude,x_utm49s,y_utm49s,location_status,site_type_scenario,additional_buildings_covered_500m,road_entrance_verified,public_land_verified,safe_water_quality_verified,search_radius_m,status_note
+KAT-T01,110.626898,-7.852362,458869.51,9132005.44,MODEL_SUPPLEMENTARY_SEARCH_CENTER_UNVERIFIED,TEMPORARY_OR_MOBILE_WATERPOINT,33,False,False,False,150,Bukan titik operasional eksisting; titik tambahan hipotetis
+KAT-T02,110.676373,-7.89153,464327.01,9127679.77,MODEL_SUPPLEMENTARY_SEARCH_CENTER_UNVERIFIED,TEMPORARY_OR_MOBILE_WATERPOINT,29,False,False,False,150,Bukan titik operasional eksisting; titik tambahan hipotetis
+KAT-T03,110.658754,-7.887169,462384.51,9128160.4,MODEL_SUPPLEMENTARY_SEARCH_CENTER_UNVERIFIED,TEMPORARY_OR_MOBILE_WATERPOINT,21,False,False,False,150,Bukan titik operasional eksisting; titik tambahan hipotetis

@@ -1,0 +1,3 @@
+# Berkas warisan versi 2 — tidak mengatur keputusan versi 3
+`docs/API_CONTRACT.md`, `docs/LEGACY_GEO_HANDOFF_v1.md`, `docs/API_AND_DATA_CONTRACT_v2.md`, `docs/SPRINT_AND_SIGNOFF.md` dan data `data/geoB_distribution/*EMPTY_SCHEMA.csv` dibuat saat tujuan studi masih memprioritaskan bantuan air eksisting. **Jangan jadikan dokumen ini spesifikasi utama.** Keputusan sekarang adalah **prospective 11+3 waterpoint locations** dan eksisting hanya komparator historis.
+Kontrak otoritatif: `README_START_HERE.md`, `docs/API_AND_DATA_CONTRACT_v3.md`, `docs/SCREEN_SPEC.md`, `docs/SPRINT_AND_SIGNOFF_v3.md`, `docs/MASTER_STATUS_AND_GAPS.md`.

@@ -1,0 +1,18 @@
+{
+  "release": "v6",
+  "created_utc": "2026-11-09",
+  "source": "user-uploaded Katongan_OSM_Network_Results.zip",
+  "status": "COMPUTATION_INTEGRATED_NOT_FIELD_VERIFIED",
+  "new_osm_outputs": true,
+  "network_selected_p": 30,
+  "coverage_pct": 87.7756070332124,
+  "covered_buildings": 3145,
+  "demand_proxies": 3583,
+  "target_reached": false,
+  "access_connector_m": 125,
+  "max_candidate_coverage_pct": 88.11052190901479,
+  "gis_layers": 13,
+  "browser_functional_test": "NOT_RUN_LOCAL_HTTP_BLOCKED_BY_ENVIRONMENT",
+  "static_integrated_tests": "PASSED",
+  "operation_sites_verified": false
+}

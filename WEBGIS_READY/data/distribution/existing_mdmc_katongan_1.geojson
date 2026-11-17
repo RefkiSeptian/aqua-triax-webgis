@@ -1,0 +1,45 @@
+{
+  "type": "FeatureCollection",
+  "name": "mdmc_existing_katongan_identified",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "MDMC-KTG-001",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.63683333,
+          -7.86308333
+        ]
+      },
+      "properties": {
+        "record_id": "MDMC-KTG-001",
+        "dataset_role": "EXISTING_HISTORICAL_COMPARATOR",
+        "location_label": "RT 06/04 Klegung",
+        "padukuhan": "Klegung",
+        "kalurahan": "Katongan",
+        "kapanewon": "Nglipar",
+        "kabupaten": "Gunungkidul",
+        "event_date": "2026-09-30",
+        "aid_type": "Tangki air bersih",
+        "reported_tanks_at_popup": 1,
+        "reported_volume_litres_at_popup": 5000,
+        "donor": "Forkom LK3 DIY",
+        "source_organization": "MDMC dan Lazismu PDM Gunungkidul",
+        "source_url": "https://mdmc.pdmgk.org/satgas-kekeringan/",
+        "source_evidence": "User screenshot of dashboard marker, supplied 2026-11-12",
+        "location_coordinate_source": "DMS coordinates supplied by user from MDMC map",
+        "location_accuracy": "APPROXIMATE_MARKER_NOT_FIELD_GPS",
+        "field_verified": false,
+        "site_capacity_verified": false,
+        "source_data_scope": "ONE_IDENTIFIED_MAP_LOCATION_NOT_EXHAUSTIVE_ALL_OPERATORS",
+        "coordinate_reference_system": "EPSG:4326",
+        "latitude": -7.86308333,
+        "longitude": 110.63683333,
+        "nearest_proposed_site_euclidean": "NET-S10",
+        "nearest_proposed_site_distance_m_approx": 120.8,
+        "distance_method": "EPSG:32749 projected straight-line, not network walking distance"
+      }
+    }
+  ]
+}

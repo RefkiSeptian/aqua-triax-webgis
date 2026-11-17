@@ -1,0 +1,65 @@
+{
+  "package_version": "3.0.0",
+  "date": "2026-11-09",
+  "study_area": "Katongan, Nglipar, Gunungkidul",
+  "source_of_truth": {
+    "rwh_buildings": "/data/katongan_buildings_rwh.geojson",
+    "boundary": "/data/katongan_boundary.geojson",
+    "proposed_distribution_sites": "/data/distribution/proposed_site_search_centres_11.geojson",
+    "proposed_additional_sites": "/data/distribution/phase2_supplementary_centres.geojson",
+    "distribution_assignment_baseline": "/data/distribution/building_to_site_assignment_points.geojson",
+    "distribution_assignment_phase2": "/data/distribution/phase2_building_assignments.geojson"
+  },
+  "climate": {
+    "dataset": "CHIRPS V3 DAILY_RNL",
+    "daily_rows": 10958,
+    "period": "1996-2025",
+    "sampling_disclosure": "annual rooftop CHIRPS native pixel; daily tank CHIRPS AOI mean"
+  },
+  "rwh": {
+    "n_building_candidates": 3583,
+    "total_candidate_footprint_m2": 334545.928,
+    "runoff_scenarios": [
+      0.7,
+      0.8,
+      0.84,
+      0.9
+    ],
+    "total_rwh_scenarios_m3_yr": {
+      "RCHP_RC70": 446835.154,
+      "RCHP_RC80": 510668.748,
+      "RCHP_RC84": 536202.185,
+      "RCHP_RC90": 574502.341
+    },
+    "status": "THEORETICAL_NOT_USABLE_OR_DRINKABLE"
+  },
+  "prospective_sites": {
+    "n_base": 11,
+    "n_supplementary": 3,
+    "radius_m": 500,
+    "distance_type": "EUCLIDEAN",
+    "candidate_centres_screened": 342,
+    "base_covered_buildings": 3434,
+    "base_coverage_pct": 95.84147,
+    "phase2_covered_buildings": 3517,
+    "phase2_coverage_pct": 98.15797,
+    "status": "UNVERIFIED_MODEL_SEARCH_CENTRES",
+    "optimized_method": "MAXIMUM_COVERAGE_HEURISTIC_NOT_PROVEN_GLOBAL_OPTIMUM"
+  },
+  "demand": {
+    "population_reference": 5569,
+    "population_reference_year": "UNKNOWN",
+    "affected_fraction_scenario": 0.5,
+    "liter_per_person_per_day_scenario": 15,
+    "liters_per_day_scenario": 41767.5,
+    "building_proxy_is_not_households": true
+  },
+  "kesling": {
+    "has_local_laboratory_data": false,
+    "decision_rule_status": "NONCERTIFYING",
+    "potability_assertion_allowed": false,
+    "numeric_national_thresholds": "NEEDS_SPECIALIST_LEGAL_REVIEW"
+  },
+  "existing_aid": "HISTORICAL_AREA_ONLY: Klegung and Perbutan; no verified exact GPS; comparator not location optimizer baseline",
+  "readme": "README_START_HERE.md"
+}

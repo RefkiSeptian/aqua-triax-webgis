@@ -1,0 +1,83 @@
+[
+  {
+    "affected_fraction": 0.25,
+    "liters_person_day": 15,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 20883.75,
+    "demand_in_covered_service_areas_liters": 18330.84,
+    "demand_outside_service_areas_liters": 2552.91,
+    "not_actual_beneficiaries": true
+  },
+  {
+    "affected_fraction": 0.25,
+    "liters_person_day": 50,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 69612.5,
+    "demand_in_covered_service_areas_liters": 61102.79,
+    "demand_outside_service_areas_liters": 8509.71,
+    "not_actual_beneficiaries": true
+  },
+  {
+    "affected_fraction": 0.25,
+    "liters_person_day": 100,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 139225.0,
+    "demand_in_covered_service_areas_liters": 122205.59,
+    "demand_outside_service_areas_liters": 17019.41,
+    "not_actual_beneficiaries": true
+  },
+  {
+    "affected_fraction": 0.5,
+    "liters_person_day": 15,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 41767.5,
+    "demand_in_covered_service_areas_liters": 36661.68,
+    "demand_outside_service_areas_liters": 5105.82,
+    "not_actual_beneficiaries": true
+  },
+  {
+    "affected_fraction": 0.5,
+    "liters_person_day": 50,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 139225.0,
+    "demand_in_covered_service_areas_liters": 122205.59,
+    "demand_outside_service_areas_liters": 17019.41,
+    "not_actual_beneficiaries": true
+  },
+  {
+    "affected_fraction": 0.5,
+    "liters_person_day": 100,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 278450.0,
+    "demand_in_covered_service_areas_liters": 244411.18,
+    "demand_outside_service_areas_liters": 34038.82,
+    "not_actual_beneficiaries": true
+  },
+  {
+    "affected_fraction": 0.75,
+    "liters_person_day": 15,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 62651.25,
+    "demand_in_covered_service_areas_liters": 54992.52,
+    "demand_outside_service_areas_liters": 7658.73,
+    "not_actual_beneficiaries": true
+  },
+  {
+    "affected_fraction": 0.75,
+    "liters_person_day": 50,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 208837.5,
+    "demand_in_covered_service_areas_liters": 183308.38,
+    "demand_outside_service_areas_liters": 25529.12,
+    "not_actual_beneficiaries": true
+  },
+  {
+    "affected_fraction": 0.75,
+    "liters_person_day": 100,
+    "population_reference": 5569,
+    "total_liters_day_hypothetical": 417675.0,
+    "demand_in_covered_service_areas_liters": 366616.77,
+    "demand_outside_service_areas_liters": 51058.23,
+    "not_actual_beneficiaries": true
+  }
+]

@@ -1,0 +1,4 @@
+scenario_id,first_flush_depth_mm,dry_gap_days,dry_day_threshold_mm,method,status,note
+NO_DIVERSION,0,2,1,DAILY_EVENT_PROXY,BASELINE,"Reference original YAS, no first flush"
+FF_0P5,0.5,2,1,DAILY_EVENT_PROXY,HYPOTHETICAL_SENSITIVITY,Illustrative diverted water depth; NOT local design standard
+FF_1P0,1,2,1,DAILY_EVENT_PROXY,HYPOTHETICAL_SENSITIVITY,Illustrative diverted water depth; NOT local design standard

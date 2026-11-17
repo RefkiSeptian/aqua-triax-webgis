@@ -1,0 +1,5 @@
+{
+  "pipeline_version": "v5.1-osm-502-fix",
+  "changed": "BBox Overpass queries, alternate providers, per-graph GraphML cache, bounded retries",
+  "network_run_status": "NOT_YET_RUN_AGAINST_REAL_KATONGAN_ROADS"
+}

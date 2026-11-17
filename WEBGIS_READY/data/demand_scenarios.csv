@@ -1,0 +1,4 @@
+scenario_id,label,liters_per_person_per_day,reference_context,application,status,source_id,caution
+EMERGENCY_MIN,Minimum respons darurat,15,Sphere 2018: survival water minimum,"Skenario keadaan darurat untuk drinking,cooking,basic hygiene (kuantitas), bukan kondisi domestik normal",LITERATURE_BENCHMARK,SPHERE_2018,Tidak membuktikan mutu air; kebutuhan meningkat menurut kondisi dan kelompok rentan
+DOMESTIC_MID,Layanan rumah tangga menengah,50,Skenario desain tim mengacu kerangka service level WHO 2020,Skenario uji sensitivitas kebutuhan rumah tangga keseluruhan,MODEL_ASSUMPTION,WHO_WATER_2020,50 tidak diklaim sebagai kebutuhan aktual atau standar wajib Katongan
+DOMESTIC_HIGH,Layanan rumah tangga lebih tinggi,100,Skenario desain tim mengacu kerangka service level WHO 2020,Skenario uji sensitivitas kebutuhan rumah tangga keseluruhan,MODEL_ASSUMPTION,WHO_WATER_2020,100 tidak diklaim sebagai kebutuhan aktual Katongan; bukan angka konsumsi air minum murni

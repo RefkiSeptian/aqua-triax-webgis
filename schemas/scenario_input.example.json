@@ -1,0 +1,34 @@
+{
+  "scenario_id": "KATONGAN_HYPOTHETICAL_001",
+  "note": "DEMONSTRATION OF INPUT SHAPE, NOT A MEASURED LOCAL SITE",
+  "rwh": {
+    "roof_m2": 100,
+    "rc": 0.8,
+    "household_people": 4,
+    "demand_lpcd": 50,
+    "tank_l": 5000,
+    "first_flush": {
+      "mode": "NONE",
+      "depth_mm": 0,
+      "dry_gap_days": 2,
+      "dry_day_threshold_mm": 1
+    }
+  },
+  "quality": {
+    "intended_use": "DRINKING",
+    "has_lab_report": false,
+    "lab_complete": false,
+    "sanitary_flags": {
+      "animal_droppings": true,
+      "uncovered_tank": false,
+      "unknown_roof_material": true,
+      "chemical_suspected": false,
+      "turbid": true
+    }
+  },
+  "water_aid": {
+    "status": "NOT_VERIFIED",
+    "sites": [],
+    "demand_nodes": []
+  }
+}

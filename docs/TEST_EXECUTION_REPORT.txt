@@ -1,0 +1,25 @@
+$ python tests/test_master_handoff.py
+PASS MASTER V3: 3583 buildings; 11 + 3 proposed centres; 3434/3517 covered; RWH RC sums match.
+STATUS: 0
+
+$ python tests/verify_data.py
+PASS: 3583 polygons, 10958 days, 360 SPI months, 90 CDD rows, 4 RWH scenario sums
+STATUS: 0
+
+$ node src/test_yas.js data/katongan_daily_rain_1996_2025.csv data/katongan_yas_scenario_matrix.csv
+PASS 45 YAS scenarios; daily rain length 10958
+STATUS: 0
+
+$ node tests/test_integrated.js
+PASS integrated tests: demand, quality noncertification, first flush, distribution readiness
+{
+  "base_time_reliability_pct": 86.92279613068078,
+  "first_flush_time_reliability_pct": 86.31137068808177,
+  "first_flush_diverted_m3": 19.4,
+  "first_flush_event_proxies": 388
+}
+STATUS: 0
+
+$ node tests/test_quality_catalog.js
+PASS quality candidate codes: FIRST_FLUSH, MICROBIAL_TREATMENT_DESIGN_REVIEW, PRE_CLEAN, SCREEN, SEDIMENT, SOURCE_AVOIDANCE, TANK_COVER
+STATUS: 0

@@ -1,0 +1,8 @@
+parameter_id,parameter,hazard_group,unit,threshold_numeric,threshold_operator,national_legal_status,source_id,required_for_context,notes
+E_COLI,Escherichia coli,microbiological,CFU_or_MPN_per_100mL,,,LEGAL_REVIEW_REQUIRED,WHO_GDWQ_2026;BPK_P2_2023;KEMENKES_P3_2026,drinking water,Do not hard-code national legal threshold until verified from applicable text and sampling method
+TURBIDITY,Kekeruhan,physical,NTU,,,LEGAL_REVIEW_REQUIRED,WHO_GDWQ_2026;BPK_P2_2023;KEMENKES_P3_2026,treatment performance,3 NTU in draft is NOT approved universal threshold; UV/filter-specific performance is separate
+PH,pH,chemical/operational,pH_units,,,LEGAL_REVIEW_REQUIRED,WHO_GDWQ_2026;BPK_P2_2023;KEMENKES_P3_2026,treatment compatibility,Operational parameter; do not invent a universal safe range
+LEAD,Timbal (Pb),chemical,mg_per_L,,,LEGAL_REVIEW_REQUIRED,WHO_GDWQ_2026;BPK_P2_2023;KEMENKES_P3_2026,if roof/gutter/paint exposure suspected,Specific chemical testing when risk material exists
+ZINC,Seng (Zn),chemical,mg_per_L,,,LEGAL_REVIEW_REQUIRED,WHO_GDWQ_2026;BPK_P2_2023;KEMENKES_P3_2026,if zinc galvanized components,Consider source-specific screening
+CHEM_SPECIFIC,Pestisida/senyawa organik spesifik,chemical,analyte_specific,,,LEGAL_REVIEW_REQUIRED,WHO_GDWQ_2026,if source risk indicates exposure,"Must specify analyte and method, not generic pass/fail"
+FREE_CHLORINE,Residu klorin bebas,operational,mg_per_L,,,LEGAL_REVIEW_REQUIRED,WHO_GDWQ_2026,if chlorination is implemented,Operational monitoring requires context-specific conditions; no blanket dose

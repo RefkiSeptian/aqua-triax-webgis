@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "fields": {
+    "intended_use": [
+      "DRINKING",
+      "COOKING",
+      "NONPOTABLE_DOMESTIC",
+      "OTHER"
+    ],
+    "has_lab_report": "boolean",
+    "lab_complete": "boolean (all relevant parameters, tests, and interpretation verified)",
+    "sanitary_flags": {
+      "animal_droppings": "boolean",
+      "uncovered_tank": "boolean",
+      "unknown_roof_material": "boolean",
+      "chemical_suspected": "boolean",
+      "turbid": "boolean"
+    }
+  },
+  "outputs": {
+    "approval_status": [
+      "NOT_VERIFIED",
+      "NEEDS_QUALIFIED_REVIEW"
+    ],
+    "risk_flags": "array of codes",
+    "candidate_controls": "array of technology IDs",
+    "required_verification": "array of required checks"
+  },
+  "note": "This contract NEVER returns potable/safe/fit-to-drink certification."
+}

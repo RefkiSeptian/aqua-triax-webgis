@@ -1,0 +1,4 @@
+record_type,geography,granularity,locations_detail_map,tanks_detail_map,tanks_donor_recap,source_as_of,exact_coordinates_verified,can_compare_coverage_with_Katongan,source
+MDMC_GUNUNGKIDUL_BROAD,Gunungkidul,Kabupaten,146.0,169.0,374.0,2026-10-16,PARTIAL,False,https://mdmc.pdmgk.org/satgas-kekeringan/
+MDMC_NGLIPAR,Nglipar,Kapanewon,11.0,16.0,51.0,2026-10-16,PARTIAL,False,https://mdmc.pdmgk.org/satgas-kekeringan/
+BPBD_KATONGAN_AREA_EVIDENCE,Klegung & Perbutan (Katongan),Padukuhan,,,,2026-10-15,NO,False,BPBD DIY reported delivery; physical drop coordinates pending

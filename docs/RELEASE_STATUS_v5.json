@@ -1,0 +1,26 @@
+{
+  "project": "AGC2027 Katongan",
+  "release": "v5 research-and-implementation handoff",
+  "ready": {
+    "rwh_building_geojson": true,
+    "gis_gpkg_8_layers": true,
+    "shapefiles_8_layers": true,
+    "climate_chirps_series": true,
+    "yas_js_reference": true,
+    "water_quality_risk_decision": true,
+    "prospective_euclidean_scenarios_11_and_14": true,
+    "local_webgis_prototype": true,
+    "network_osm_extraction_reproducible_colab": true
+  },
+  "not_verified_or_not_yet_fetched": {
+    "actual_osm_road_network_gis_layers": "PENDING_OSM_DOWNLOAD_COLAB",
+    "network_constrained_sites": "PENDING_OSM_DOWNLOAD_AND_RERUN",
+    "land_titles_and_available_public_parcels": "NO_VALIDATED_DATA",
+    "physical_truck_access_and_turning": "NO_VALIDATED_FIELD_EVIDENCE",
+    "water_supply_depot_and_capacity": "NO_VALIDATED_DATA",
+    "water_lab_water_safety": "NO_LAB_DATA",
+    "operational_actual_demand": "PROXY_ONLY",
+    "public_deployment": "NOT_DEPLOYED"
+  },
+  "important": "Do not relabel Euclidean locations as network optimal; screen sites and re-run optimization after real OSM retrieval."
+}

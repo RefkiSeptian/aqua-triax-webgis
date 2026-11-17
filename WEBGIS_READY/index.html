@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f3d2b" />
+  <title>AQUA TRIAX</title>
+  <link rel="icon" type="image/svg+xml" href="assets/katongan-icon.svg" />
+  <link rel="preload" href="assets/fonts/plus-jakarta-sans.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/source-sans-3.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="rwh-rain-background" class="rain-background" aria-hidden="true" hidden>
+      <canvas class="rain-background-fall"></canvas>
+      <div class="rain-background-lightning"></div>
+    </div>
+    <header class="masthead" hidden>
+      <button type="button" class="brand" data-tab="home" aria-label="Beranda AQUA TRIAX" aria-current="page">
+        <img class="brand-logo" src="assets/katongan-logo.svg" width="450" height="235" alt="AQUA TRIAX" />
+      </button>
+      <nav class="tabs main-tabs" aria-label="Fitur utama">
+        <button class="tab" data-tab="dashboard">Dashboard</button>
+        <button class="tab" data-tab="quality">Cek Kondisi Air</button>
+        <button class="tab" data-tab="about">Tentang</button>
+      </nav>
+    </header>
+    <main id="home-view" class="project-page home-view">
+      <section class="home-hero" aria-labelledby="home-title">
+        <figure class="home-photo">
+          <div class="home-photo-frame">
+            <img src="assets/warga-mengambil-air-ngadisan.webp" width="2560" height="1829" alt="Warga Ngadisan mengisi jeriken di pompa air desa" fetchpriority="high" draggable="false">
+          </div>
+          <figcaption>Warga mengambil air di Ngadisan, Jawa Timur, 8 Februari 2015. <a href="https://commons.wikimedia.org/wiki/File:Ngadisan_Indonesia_Village-pump-01.jpg">© CEphoto, Uwe Aranas</a> · <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a> · Diubah ukuran dan dipotong sesuai layar.</figcaption>
+        </figure>
+        <div class="home-hero-copy">
+          <h1 id="home-title" tabindex="-1">Kenali sumber air di sekitar Anda</h1>
+          <p>AQUA TRIAX membantu Anda memperkirakan tampungan air hujan, melihat riwayat penyaluran bantuan, dan mengetahui langkah awal saat kondisi air berubah.</p>
+          <ul class="home-feature-list">
+            <li>Potensi Air Hujan</li>
+            <li>Lokasi Bantuan Air</li>
+            <li>Cek Kondisi Air</li>
+          </ul>
+          <div class="home-sdg-list" role="group" aria-label="Kontribusi terhadap SDGs">
+            <a class="home-sdg" href="https://sdgs.un.org/goals/goal6">
+              <img src="assets/sdg-06.svg" width="46" height="46" alt="">
+              <span>SDG 6 · Target 6.1 dan 6.4<strong>Air Bersih dan Sanitasi Layak</strong></span>
+            </a>
+            <a class="home-sdg" href="https://sdgs.un.org/goals/goal13">
+              <img src="assets/sdg-13.svg" width="46" height="46" alt="">
+              <span>SDG 13 · Target 13.1<strong>Penanganan Perubahan Iklim</strong></span>
+            </a>
+          </div>
+        </div>
+        <p class="home-swipe-hint">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m5 14 7-7 7 7M8 19l4-4 4 4" />
+          </svg>
+          <span>Geser ke arah mana saja untuk membuka Dashboard</span>
+        </p>
+      </section>
+    </main>
+    <main id="about-view" class="project-page project-about" data-team-photo="1" hidden>
+      <section class="team-section" aria-labelledby="team-title">
+        <h1 id="team-title">Meet the Team</h1>
+        <ul class="team-members" role="list">
+          <li class="team-member">
+            <div class="team-portrait team-portrait-mint">
+              <div class="team-photos">
+                <img src="assets/team/team-member-01.webp" width="720" height="900" alt="">
+                <img src="assets/team/team-member-01-casual.webp" width="720" height="900" alt="">
+                <img src="assets/team/team-member-01-field.webp" width="720" height="900" alt="">
+              </div>
+            </div>
+            <h2>Nama anggota 1</h2>
+            <p>Pemetaan dan data</p>
+          </li>
+          <li class="team-member">
+            <div class="team-portrait team-portrait-teal">
+              <div class="team-photos">
+                <img src="assets/team/team-member-02.webp" width="720" height="900" alt="">
+                <img src="assets/team/team-member-02-casual.webp" width="720" height="900" alt="">
+                <img src="assets/team/team-member-02-field.webp" width="720" height="900" alt="">
+              </div>
+            </div>
+            <h2>Nama anggota 2</h2>
+            <p>Pengembangan WebGIS</p>
+          </li>
+          <li class="team-member">
+            <div class="team-portrait team-portrait-amber">
+              <div class="team-photos">
+                <img src="assets/team/team-member-03.webp" width="720" height="900" alt="">
+                <img src="assets/team/team-member-03-casual.webp" width="720" height="900" alt="">
+                <img src="assets/team/team-member-03-field.webp" width="720" height="900" alt="">
+              </div>
+            </div>
+            <h2>Nama anggota 3</h2>
+            <p>Riset kualitas air</p>
+          </li>
+        </ul>
+        <button type="button" class="section-link team-photo-next" id="team-photo-next" hidden>Foto berikutnya</button>
+      </section>
+      <section class="about-project" aria-labelledby="about-project-title">
+        <div class="about-project-copy">
+          <p class="about-project-label">Tentang AQUA TRIAX</p>
+          <h2 id="about-project-title">Dari hujan ke kebutuhan air sehari-hari</h2>
+          <p>AQUA TRIAX membantu warga menjawab tiga pertanyaan sehari-hari. Berapa banyak air hujan yang bisa ditampung dari atap? Di mana bantuan air pernah disalurkan? Apa langkah awal saat air tandon berubah bau, warna, atau kejernihannya?</p>
+          <p>Peta dan kalkulator membantu memperkirakan potensi tampungan dan kebutuhan tandon. Riwayat bantuan memberi gambaran penyaluran sebelumnya, sementara panduan cek air membantu warga mencatat temuan dan melihat langkah berikutnya.</p>
+        </div>
+        <aside class="about-project-scope" aria-labelledby="about-scope-title">
+          <h3 id="about-scope-title">Cakupan kajian</h3>
+          <p>Pemetaan awal menggunakan data Kalurahan Katongan, Gunungkidul.</p>
+          <button type="button" class="about-methods-link" data-tab="methods" disabled>Metodologi &amp; sumber</button>
+        </aside>
+      </section>
+    </main>
+    <p id="load-status" class="notice project-load-status" role="status">Memuat data penelitian…</p>
+    <div id="dashboard-map-layout" class="dashboard-map-layout" hidden>
+      <aside class="dashboard-panel" aria-labelledby="dashboard-summary-title">
+        <h2 id="dashboard-summary-title">Ringkasan Katongan</h2>
+        <p id="dashboard-summary-context"></p>
+        <div id="dashboard-summary-content"></div>
+        <section class="dashboard-data-basis" aria-labelledby="climate-title">
+          <h3 id="climate-title">Pola hujan Katongan</h3>
+          <p>Rata-rata wilayah kajian · CHIRPS v3 · 1996–2025</p>
+          <div class="control">
+            <label for="climate-series">Indikator hujan</label>
+            <select id="climate-series">
+              <option value="seasonal">Pola bulanan · Januari–Desember</option>
+              <option value="annual">Per tahun · 1996–2025</option>
+              <option value="monthly">Deret curah hujan bulanan</option>
+              <option value="SPI3">Indeks hujan 3 bulan (SPI-3)</option>
+              <option value="SPI6">Indeks hujan 6 bulan (SPI-6)</option>
+              <option value="CDD">Hari kering berturut-turut (CDD)</option>
+            </select>
+          </div>
+          <div id="cdd-control" class="control" hidden>
+            <label for="cdd-threshold">Ambang hujan harian</label>
+            <select id="cdd-threshold"><option value="0.5">0,5 mm</option><option value="1" selected>1 mm</option><option value="2">2 mm</option></select>
+          </div>
+          <h4 id="climate-plot-title"></h4>
+          <div id="climate-plot" role="region" aria-labelledby="climate-plot-title"></div>
+          <p id="climate-note"></p>
+        </section>
+      </aside>
+      <div id="rwh-map-slot" class="rwh-map-slot"></div>
+    </div>
+    <div class="task-intro" hidden>
+      <div id="tab-intro"><h1>Peta Panen Air Hujan</h1><p>Lihat perkiraan air hujan yang bisa ditampung dari atap di Katongan.</p></div>
+      <div id="task-actions" class="task-actions" hidden></div>
+    </div>
+    <div id="dashboard-details" class="layout" hidden>
+      <aside class="sidebar" id="view-sidebar">
+        <section id="controls"></section>
+      </aside>
+      <main class="workspace">
+        <div class="workspace-head" id="workspace-head"><h2 id="headline">Perkiraan air hujan</h2></div>
+        <div id="quality-guide-slot" hidden></div>
+        <div id="workspace-map-slot">
+        <section class="map-wrap" id="map-wrap" hidden>
+          <div class="map-hdr"><span id="map-title">Sebaran potensi pada 3.583 footprint</span><span class="map-key" id="map-key">Luas atap × hujan × RC</span></div>
+          <div class="map-stage">
+            <div id="map" role="region" aria-label="Peta interaktif Katongan" tabindex="0"></div>
+            <div class="rwh-map-tools" id="rwh-map-tools" hidden>
+              <div class="rwh-map-guide">
+                <h1>Peta Ketahanan Air</h1>
+                <p>Pilih layer di kanan. Ketuk objek di peta untuk melihat rinciannya.</p>
+                <p id="rwh-location-status" class="rwh-location-status" role="status"></p>
+                <section class="rwh-legend" aria-labelledby="rwh-legend-title">
+                  <h2 id="rwh-legend-title">Legenda peta</h2>
+                  <div id="rwh-legend-slot"></div>
+                </section>
+              </div>
+              <section id="rainfall-legend" class="rainfall-legend" aria-labelledby="rainfall-legend-title" hidden>
+                <h2 id="rainfall-legend-title">Curah hujan rata-rata tahunan</h2>
+                <p>CHIRPS v3 · 1996–2025 · mm/tahun</p>
+                <div class="rainfall-gradient" aria-hidden="true"></div>
+                <div id="rainfall-legend-values" class="rainfall-legend-values"></div>
+              </section>
+              <div class="rwh-map-actions" role="group" aria-label="Alat peta">
+                <button type="button" class="rwh-icon-button" data-map-tool="basemap" aria-label="Peta dasar" aria-controls="rwh-tool-panel" aria-expanded="false" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15m6-12v15"/></svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Peta dasar</span>
+                </button>
+                <button type="button" class="rwh-icon-button" data-map-tool="layers" aria-label="Layer &amp; legenda" aria-controls="rwh-tool-panel" aria-expanded="false" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/></svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Layer &amp; legenda</span>
+                </button>
+                <button type="button" class="rwh-icon-button" data-map-tool="measure" aria-label="Alat ukur" aria-controls="rwh-tool-panel" aria-expanded="false" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 16 13-13 5 5L8 21zM7 12l2 2m2-6 2 2m2-6 2 2"/></svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Alat ukur</span>
+                </button>
+                <button type="button" class="rwh-icon-button" id="rwh-zoom-in" aria-label="Perbesar peta" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Perbesar peta</span>
+                </button>
+                <button type="button" class="rwh-icon-button" id="rwh-zoom-out" aria-label="Perkecil peta" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Perkecil peta</span>
+                </button>
+                <button type="button" class="rwh-icon-button" id="rwh-open-tank"
+                  aria-label="Kalkulator tandon" aria-controls="rwh-building" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <rect x="5" y="2.5" width="14" height="19" rx="2" />
+                    <path d="M8 6h8v4H8z M9 14h.5 M14.5 14h.5 M9 18h.5 M14.5 18h.5" />
+                  </svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Kalkulator tandon</span>
+                </button>
+                <button type="button" class="rwh-icon-button" id="rwh-locate" aria-label="Lokasi saya" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2" fill="currentColor" />
+                    <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+                  </svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Lokasi saya</span>
+                </button>
+                <button type="button" class="rwh-icon-button" id="rwh-reset-map" aria-label="Kembali ke seluruh Katongan" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5" />
+                  </svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Kembali ke seluruh Katongan</span>
+                </button>
+              </div>
+              <section id="rwh-tool-panel" class="rwh-tool-panel" aria-labelledby="rwh-tool-title" hidden>
+                <div class="rwh-tool-heading">
+                  <h2 id="rwh-tool-title" tabindex="-1"></h2>
+                  <button type="button" class="rwh-close" id="rwh-close-tool" aria-label="Tutup alat peta">×</button>
+                </div>
+                <div id="rwh-tool-content"></div>
+              </section>
+            </div>
+            <aside id="rwh-building" class="rwh-building" aria-labelledby="rwh-building-title" tabindex="-1" hidden>
+              <button type="button" class="rwh-close" id="rwh-close" aria-label="Tutup panel peta">×</button>
+              <div id="rwh-building-content"></div>
+            </aside>
+          </div>
+          <div id="map-credits" class="map-credits" aria-label="Kredit sumber peta"></div>
+          <div id="map-warning" class="map-warning" hidden>Peta membutuhkan koneksi untuk memuat pustaka Leaflet dan peta dasar. Data lainnya tetap bisa dilihat.</div>
+          <div id="map-legend-slot"><div id="map-legend" class="map-legend" aria-label="Legenda peta"></div></div>
+          <div class="map-caption" id="map-caption"></div>
+        </section>
+        </div>
+        <section id="dashboard-distribution" class="rwh-research-section" aria-labelledby="dashboard-distribution-title" hidden>
+          <h2 id="dashboard-distribution-title" tabindex="-1">Lokasi Bantuan Air</h2>
+          <p id="dashboard-aid-contact">Untuk informasi penyaluran terbaru, hubungi Dukuh atau Pemerintah Kalurahan Katongan.</p>
+          <div id="distribution-actions" class="task-actions"></div>
+          <div id="distribution-controls"></div>
+          <div id="distribution-metrics" class="metrics" aria-label="Indikator distribusi air"></div>
+          <div id="distribution-details" class="details" aria-live="polite"></div>
+        </section>
+        <section class="metrics" id="metrics" aria-label="Indikator hasil"></section>
+        <section class="details" id="details" aria-live="polite"></section>
+
+      </main>
+    </div>
+    <div class="rain-ground" aria-hidden="true"></div>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
+  <script src="models/yas.js" defer></script>
+  <script src="models/yas_first_flush.js" defer></script>
+  <script src="models/quality_rules.js" defer></script>
+  <script src="analysis-views.js" defer></script>
+  <script src="distribution.js" defer></script>
+  <script src="dashboard-panels.js" defer></script>
+  <script src="map-tools.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>

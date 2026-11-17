@@ -1,0 +1,72 @@
+{
+  "run_utc": "2026-11-09T06:13:24.776957+00:00",
+  "data_source": "OpenStreetMap walking + driving network via Overpass / OSMnx",
+  "graph_provenance": {
+    "bbox_wsen": [
+      110.61363296113696,
+      -7.906377345465915,
+      110.69346208424294,
+      -7.838476540605679
+    ],
+    "acquired_utc": "2026-11-09T05:59:28.778708+00:00",
+    "graphs": {
+      "walk": {
+        "source": "overpass_api",
+        "endpoint": "https://overpass-api.de/api",
+        "path": "/content/katongan_master/AGC2027_Katongan_MASTER_SI_v5_1_OSM_FIXED/NETWORK_OSM/osm_graph_cache/walk.graphml",
+        "nodes": 1895,
+        "edges": 4740
+      },
+      "drive": {
+        "source": "overpass_api",
+        "endpoint": "https://overpass-api.de/api",
+        "path": "/content/katongan_master/AGC2027_Katongan_MASTER_SI_v5_1_OSM_FIXED/NETWORK_OSM/osm_graph_cache/drive.graphml",
+        "nodes": 1768,
+        "edges": 4461
+      }
+    },
+    "providers_tried": [
+      "https://overpass.private.coffee/api",
+      "https://overpass-api.de/api"
+    ]
+  },
+  "validation_status": "NETWORK_ANALYSIS_ONLY_NOT_OPERATIONAL_SITING",
+  "N_building_footprint_proxies": 3583,
+  "n_hex_original": 342,
+  "n_site_candidates_walk_drive_screened": 148,
+  "n_demand_near_walk_network": 3165,
+  "n_demand_any_candidate_within_500m": 3157,
+  "selected_site_count": 30,
+  "n_covered_500m_network_plus_access": 3145,
+  "coverage_network_pct": 87.7756070332124,
+  "target_reached": false,
+  "search_max_sites": 30,
+  "service_distance_m": 500.0,
+  "max_connector_distance_m": 125.0,
+  "algorithm": "greedy maximum coverage + limited local-swap heuristic, no global optimum guarantee",
+  "network_details": {
+    "walk_nodes": 1895,
+    "walk_edges": 4740,
+    "drive_nodes": 1768,
+    "drive_edges": 4461
+  },
+  "comparison_previous_11_straightline_centres": {
+    "proposed_new_network_sites": 30,
+    "new_network_covered": 3145,
+    "new_network_coverage_pct": 87.7756,
+    "previous_11_centres_screened_over_OSM_network_coverage_pct": 44.4041,
+    "prior_11_centres_covered_count_on_OSM_network": 1591,
+    "prior_11_centres_near_walk_node_le125m": 9,
+    "caution": "Prior Euclidean locations are hypothetical; this is an apples-to-apples network scenario comparison, not baseline government operation."
+  },
+  "very_important_limits": [
+    "OSM road tagging may omit walkways or truck access and require verification",
+    "Nearest-node connector distances are assumed straight to the network; access rights and slope unknown",
+    "Sites are DRIVE-NETWORK NODES; not plots of land or buildable tanker facilities",
+    "No vehicle route optimization because real source/depot, capacities and truck schedules unavailable",
+    "Demand nodes are BUILDING footprint centroids, not households or drought-affected beneficiaries",
+    "50% affected ×15 L/day scenario is hypothetical, not surveyed",
+    "Original 11 sites and new network points must not be described as empirically verified",
+    "Water safety testing and land title verification cannot be performed with remote OSM alone"
+  ]
+}
