@@ -1011,7 +1011,6 @@
 .quality-source-control:has(#quality-source:open) .quality-roof-checks{visibility:hidden}
 .quality-tank-checks{margin:14px 0 0;padding:8px 12px}
 .quality-action .checkline{font-size:.96rem;color:#263d34}
-html:has(.quality-action:modal){overflow:hidden;scrollbar-gutter:stable}
 .quality-action{
   --close-size:44px;
   --close-top:4px;
@@ -1081,12 +1080,14 @@ html:has(.quality-action:modal){overflow:hidden;scrollbar-gutter:stable}
 .quality-layout #quality-next h4{margin:14px 0 6px}
 .quality-layout #quality-next .evidence-list{font-size:1rem;line-height:1.5}
 @media(width > 760px){
-  .quality-action:modal{
+  .quality-action{
+    position:fixed;z-index:1300;inset-block:108px 24px;margin-block:auto;height:fit-content;
     width:min(540px,calc(100% - 2 * var(--scene-side) - var(--scene-copy) - 24px));
     margin-inline:0;
     inset-inline:auto var(--scene-side);
   }
-  .quality-stage:nth-child(even) .quality-action:modal{inset-inline:var(--scene-side) auto}
+  .quality-stage:nth-child(even) .quality-action{inset-inline:var(--scene-side) auto}
+  .quality-action-body{max-height:calc(100dvh - 160px)}
 }
 @media(max-width:760px){
   .quality-stage,.quality-stage:nth-child(even){
@@ -1478,10 +1479,33 @@ html:has(.quality-action:modal){overflow:hidden;scrollbar-gutter:stable}
 }
 .quality-story[data-story="review"] .home-scene-cue{opacity:0}
 @media(width > 760px){
-  .quality-story .quality-stage .quality-action:modal{
+  .quality-story .quality-stage .quality-action{
     inset-inline:auto clamp(26px,6.5vw,118px);
     width:min(540px,calc(100% - 2 * clamp(26px,6.5vw,118px) - min(43vw,510px) - 24px));
   }
+}
+
+/* Small, shared surface transitions; contextual panels never pause the scene. */
+@media(prefers-reduced-motion:no-preference){
+  .quality-action,.rwh-building,.rwh-tool-panel{
+    opacity:0;translate:0 8px;
+    transition:opacity 220ms ease,translate 260ms cubic-bezier(.22,1,.36,1),
+      display 220ms allow-discrete;
+  }
+  .quality-action[open],.rwh-building:not([hidden]),.rwh-tool-panel:not([hidden]){
+    opacity:1;translate:0 0;
+  }
+  .quality-action:not([open]),.rwh-building[hidden],.rwh-tool-panel[hidden]{pointer-events:none}
+  @starting-style{
+    .quality-action[open],.rwh-building:not([hidden]),.rwh-tool-panel:not([hidden]){
+      opacity:0;translate:0 8px;
+    }
+  }
+  .leaflet-popup-content-wrapper,.tour-card{animation:surface-enter 240ms cubic-bezier(.22,1,.36,1)}
+}
+@keyframes surface-enter{
+  from{opacity:0;translate:0 6px}
+  to{opacity:1;translate:0 0}
 }
 @media(max-width:760px){
   .quality-story .quality-stage,.quality-story #quality-purpose{

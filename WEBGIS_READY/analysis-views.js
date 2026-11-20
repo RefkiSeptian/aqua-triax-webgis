@@ -126,7 +126,6 @@ function closeRwhBuilding() {
   st.selectedBuilding = null;
   st.quickTank = null;
   $('#rwh-building').hidden = true;
-  $('#rwh-building-content').replaceChildren();
 }
 
 function selectRwhBuilding(layer, location) {
@@ -962,11 +961,10 @@ function quality() {
         details.innerHTML = '';
       }
       trigger.focus({preventScroll:true});
+      // This is contextual guidance: keep the story and page scroll available.
+      dialog.show();
       if (narrowGuide.matches) {
-        dialog.show();
-        dialog.scrollIntoView({block:'nearest'});
-      } else {
-        dialog.showModal();
+        dialog.scrollIntoView({block:'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
       }
       trigger.setAttribute('aria-expanded', 'true');
     };

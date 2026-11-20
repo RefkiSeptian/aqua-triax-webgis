@@ -98,9 +98,27 @@ def check(page, url, screenshots, name):
         dialog = page.locator(f'#quality-action-{stage}')
         expect(dialog).to_be_visible()
         if name == 'desktop':
+            assert dialog.evaluate("el => !el.matches(':modal')"), 'Contextual guidance must not lock the page'
+            expect(page.locator('html')).not_to_have_css('overflow', 'hidden')
+            page.wait_for_timeout(300)
             popup = dialog.locator('.quality-action-body').bounding_box()
             copy = page.locator(f'#quality-{stage} .quality-stage-copy').bounding_box()
             assert popup['x'] >= copy['x'] + copy['width'], (stage, popup, copy)
+            if stage == 'odor':
+                snapshot = canvas.evaluate('el => el.toDataURL()')
+                page.wait_for_timeout(200)
+                assert snapshot != canvas.evaluate('el => el.toDataURL()'), 'Scene must keep animating behind the guide'
+                position = page.evaluate('scrollY')
+                page.mouse.move(20, 300)
+                page.mouse.wheel(0, 90)
+                page.wait_for_function('previous => scrollY > previous', arg=position)
+                expect(dialog).to_be_visible()
+                page.locator(f'#quality-{stage} .quality-stage-copy h2').click()
+                expect(dialog).to_be_hidden()
+                button.click()
+                expect(dialog).to_be_visible()
+            if screenshots:
+                page.screenshot(path=str(screenshots / f'quality-guide-{name}-{stage}.png'))
         dialog.get_by_role('button', name='Tutup panduan').click()
         expect(button).to_be_focused()
     page.locator('#use').select_option('NONPOTABLE_DOMESTIC')

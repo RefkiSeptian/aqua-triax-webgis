@@ -29,6 +29,11 @@ function startQualityStory(form) {
     }
     if (form.getBoundingClientRect().bottom <= innerHeight + 2) progress = sections.length - 1;
     const current = Math.round(progress);
+    const openGuide = form.querySelector('.quality-action[open]');
+    if (openGuide) {
+      const stage = openGuide.closest('[data-quality-story]').getBoundingClientRect();
+      if (stage.bottom < 110 || stage.top >= innerHeight) openGuide.close();
+    }
     if (Math.abs(progress - previousProgress) > .0001) {
       navigation.dataset.flow = progress < previousProgress ? 'backward' : 'forward';
     }
@@ -61,6 +66,19 @@ function startQualityStory(form) {
 
   window.addEventListener('scroll', requestUpdate, {passive: true, signal: listeners.signal});
   window.addEventListener('resize', requestUpdate, {signal: listeners.signal});
+  document.addEventListener('pointerdown', event => {
+    const guide = form.querySelector('.quality-action[open]');
+    if (guide && !guide.contains(event.target) && !event.target.closest('[data-issue]')) guide.close();
+  }, {signal: listeners.signal});
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || event.defaultPrevented) return;
+    if (CSS.supports('selector(select:open)') && event.target.closest('select:open')) return;
+    const guide = form.querySelector('.quality-action[open]');
+    if (guide) {
+      event.preventDefault();
+      guide.close();
+    }
+  }, {signal: listeners.signal});
   const resize = new ResizeObserver(requestUpdate);
   sections.forEach(section => resize.observe(section));
   scene.start();
