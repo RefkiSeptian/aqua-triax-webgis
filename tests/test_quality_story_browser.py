@@ -29,18 +29,54 @@ def check(page, url, screenshots, name):
         item => [item.id, item.value, item.checked, item.disabled])"""
     before = page.evaluate(values)
     pixels = set()
+    readings = []
+    navigation = page.locator('.quality-chapters')
+    meter = navigation.get_by_role('progressbar')
+    expect(navigation.locator('.story-chapter-number')).to_have_count(0)
     for stage in ['tank', 'odor', 'color', 'turbid', 'purpose', 'review', 'color', 'tank']:
         page.locator(f'#quality-{stage}').evaluate("el => el.scrollIntoView({block:'start',behavior:'instant'})")
         expect(form).to_have_attribute('data-story', stage)
         expect(page.locator(f'.quality-chapters a[href="#quality-{stage}"]')).to_have_attribute('aria-current', 'step')
+        readings.append(int(meter.get_attribute('aria-valuenow')))
+        expect(meter).to_have_attribute('aria-valuetext', navigation.locator('[aria-current="step"]').get_attribute('aria-label'))
+        expect(navigation.locator('.quality-chapter-label:visible')).to_have_count(1)
         page.wait_for_timeout(800)
-        assert abs(canvas.bounding_box()['y']) < 1, (name, stage, canvas.bounding_box())
+        if stage == 'review':
+            assert page.evaluate("""() => {
+                const animation = document.querySelector('.quality-story-sequence').getBoundingClientRect();
+                const recap = document.querySelector('.quality-review-groups').getBoundingClientRect();
+                const button = document.querySelector('.quality-submit').getBoundingClientRect();
+                const previous = document.querySelector('#quality-settings').getBoundingClientRect();
+                const center = document.documentElement.clientWidth / 2;
+                return animation.bottom <= recap.top &&
+                    recap.top - previous.bottom <= 128 &&
+                    Math.abs(recap.left + recap.width / 2 - center) < 1 &&
+                    Math.abs(button.left + button.width / 2 - center) < 1;
+            }"""), f'{name}: review must be centered below the animation'
+        else:
+            assert abs(canvas.bounding_box()['y']) < 1, (name, stage, canvas.bounding_box())
         expect(page.locator('.masthead')).to_be_in_viewport(ratio=1)
         assert page.evaluate('document.documentElement.scrollWidth === innerWidth')
         pixels.add(page.evaluate("document.querySelector('#quality-story-canvas').toDataURL()"))
         if screenshots:
             page.screenshot(path=str(screenshots / f'quality-story-{name}-{stage}.png'))
+            if stage == 'review':
+                position = page.evaluate('scrollY')
+                page.locator('#quality-settings').evaluate("el => scrollTo({top: scrollY + el.getBoundingClientRect().bottom - innerHeight * .27, behavior:'instant'})")
+                page.screenshot(path=str(screenshots / f'quality-story-{name}-review-transition.png'))
+                page.evaluate('top => scrollTo({top, behavior:"instant"})', position)
     assert len(pixels) >= 6, 'The scene did not change between chapters'
+    assert readings[:6] == sorted(readings[:6]), readings
+    assert readings[6] < readings[5] and readings[7] < readings[6], readings
+    expect(navigation).to_have_attribute('data-flow', 'backward')
+    flow = navigation.locator('.quality-progress-flow')
+    if name == 'reduced-motion':
+        expect(flow).to_have_css('animation-name', 'none')
+    else:
+        expect(flow).to_have_css('animation-name', 'quality-progress-flow-right' if name == 'mobile' else 'quality-progress-flow-down')
+        expect(flow).to_have_css('animation-direction', 'reverse')
+    box = navigation.bounding_box()
+    assert (box['width'] > box['height']) == (name == 'mobile')
     assert page.evaluate(values) == before, 'Scrolling modified form answers'
     expect(page.locator('#quality-next')).to_have_count(0)
 

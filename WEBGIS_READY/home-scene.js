@@ -99,11 +99,13 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
         'Bandingkan tampilan warna air', 'Amati partikel dan endapan',
         'Tentukan penggunaan air', 'Tinjau temuan sebelum rekomendasi'];
       return {
-        radius: 1.6, tankHeight: 3.3, waterFraction: .72,
+        radius: 1.6, tankHeight: 3.3,
+        waterFraction: .72 + (motion.matches ? 0 : Math.sin(clock * 1.1) * .006),
         rain: 0, storage: 0, delivery: 0, quality: 1, dryness: 0,
         incoming: 0, diverting: false, firstFlushLevel: 0,
         qualityTime: chapter === 0 ? 1.7 : chapter === 5 ? 20 + (motion.matches ? 3 : chapterTime % 4) : 8,
-        observation: observations[chapter], cue: cues[chapter]
+        observation: observations[Math.round(progress)], cue: cues[chapter],
+        sampleOpacity: smooth(progress), odorOpacity: smooth((progress - .45) / .55)
       };
     }
     const elapsed = motion.matches ? 12 : chapterTime;
@@ -166,9 +168,15 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     const ease = fraction * fraction * (3 - 2 * fraction);
     let eye = cameras[index].eye.map((value, axis) => lerp(value, cameras[index + 1].eye[axis], ease));
     let focus = cameras[index].focus.map((value, axis) => lerp(value, cameras[index + 1].focus[axis], ease));
-    const lidView = state.quality * (1 - smooth((state.qualityTime - 2.5) / 2));
+    const lidView = qualityOnly ? 1 - smooth(progress)
+      : state.quality * (1 - smooth((state.qualityTime - 2.5) / 2));
     eye = eye.map((value, axis) => lerp(value, [6.8, 6.5, 8.3][axis], lidView));
     focus = focus.map((value, axis) => lerp(value, [2, 2.8, .2][axis], lidView));
+    if (qualityOnly && !motion.matches) {
+      const drift = Math.sin(clock * .32) * .12;
+      eye[0] += drift;
+      eye[2] -= drift * .6;
+    }
     const forward = normalize(subtract(focus, eye));
     const right = normalize(cross(forward, [0, 1, 0]));
     const mobile = width < 761;
@@ -441,7 +449,8 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     cylinder(2, .15, .2, radius, h, '#377e79', .42, false);
     cylinder(2, .18, .2, radius * .92, waterHeight, '#5dc9c0', .68);
     cylinder(2, h + .15, .2, radius * .64, .18, '#669d8a', .75, false);
-    const lift = state.observation === 'lid' ? Math.sin(Math.min(1, state.qualityTime / 3.5) * Math.PI) * .8 * state.quality : 0;
+    const lift = qualityOnly ? .8 * (1 - smooth(progress))
+      : state.observation === 'lid' ? Math.sin(Math.min(1, state.qualityTime / 3.5) * Math.PI) * .8 * state.quality : 0;
     cylinder(2, h + .33 + lift, .2, radius * .72, .13, '#88b8a1');
     if (!qualityOnly) {
       cylinder(-1.1, .3, 3.1, .23, 2.75, '#7a9e83', .45, false);
@@ -462,11 +471,12 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
       cylinder(5, 0, 2.5, .95, .75, '#659e74', .8, false);
       cylinder(5, .04, 2.5, .85, .44, '#8cdbdf', .7);
       box(6.1, .6, 2.5, 1.25, .12, .23, '#659e74');
-    } else if (state.quality > .02 && state.observation !== 'lid') {
-      cylinder(5, 0, 2.5, .68, 1.4, '#c7f3eb', .2 * state.quality, false);
+    } else if (state.quality > .02 && (qualityOnly || state.observation !== 'lid')) {
+      const opacity = state.quality * (qualityOnly ? state.sampleOpacity : 1);
+      cylinder(5, 0, 2.5, .68, 1.4, '#c7f3eb', .2 * opacity, false);
       const color = state.observation === 'color' ? '#c9a45d' : state.observation === 'particles' ? '#8b9f96' : '#8cdbdf';
       const fraction = state.observation === 'sample' ? clamp((state.qualityTime - 3.5) / 2.5) : 1;
-      cylinder(5, .03, 2.5, .62, Math.max(.03, fraction * .94), color, .65 * state.quality);
+      cylinder(5, .03, 2.5, .62, Math.max(.03, fraction * .94), color, .65 * opacity);
       if (qualityOnly && state.observation === 'color') {
         for (const [x, color] of [[3.3, '#8cdbdf'], [6.7, '#95754e']]) {
           cylinder(x, 0, 2.5, .68, 1.4, '#c7f3eb', .2, false);
@@ -568,11 +578,11 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     const q = state.qualityTime;
     if (state.observation === 'lid') {
       label('Periksa tutup tandon', [2, state.tankHeight + .45, .2], 26, -35);
-      return;
+      if (!qualityOnly) return;
     }
     const outlet = [[2 + state.radius, 1.9, .2], [4, 1.9, .2], [4, 1.9, 2.5], [5, 1.9, 2.5]];
     ctx.save();
-    ctx.globalAlpha = state.quality;
+    ctx.globalAlpha = state.quality * (qualityOnly ? state.sampleOpacity : 1);
     line(outlet, '#8bb9a5', width < 761 ? 2.5 : 4);
     if (state.observation === 'purpose') {
       line([[5, 1.9, 2.5], [5, .5, 2.5]], '#a6eff2', 2.4, 6);
@@ -596,7 +606,10 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
         glowPoint([5 + Math.cos(a) * radius, .14 + (index * .173 % .7) + Math.sin(clock + index) * .025, 2.5 + Math.sin(a) * radius], width < 761 ? 1.1 : 1.8, '#927854', .9);
       }
     }
-    if (state.observation === 'odor') drawOdorMark();
+    if (state.observation === 'odor' || qualityOnly && state.observation === 'lid') {
+      ctx.globalAlpha *= qualityOnly ? state.odorOpacity : 1;
+      drawOdorMark();
+    }
     if (state.observation === 'record') {
       const count = Math.min(3, 1 + Math.floor((q - 20) / 1.2));
       for (let index = 0; index < 3; index++) {

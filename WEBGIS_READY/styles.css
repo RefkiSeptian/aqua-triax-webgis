@@ -1345,8 +1345,18 @@ html:has(.quality-action:modal){overflow:hidden;scrollbar-gutter:stable}
 
 /* Cek Kondisi Air follows the same continuous, scroll-led scene as Beranda. */
 .quality-story{position:relative;isolation:isolate;background:#071f20;touch-action:pan-y pinch-zoom}
+.quality-story-sequence{position:relative;overflow:clip;isolation:isolate}
+.quality-story-sequence::after{
+  content:"";position:absolute;inset:auto 0 0;height:clamp(120px,22svh,220px);
+  background:linear-gradient(transparent,#071f20);pointer-events:none;z-index:1;
+}
+.quality-story-visual{z-index:0}
+.quality-story-visual .home-scene-shade{
+  background:linear-gradient(90deg,#071f20f0 0%,#071f20db 27%,#071f2070 43%,transparent 61%),
+    linear-gradient(0deg,#071f20 0%,#071f20b3 10%,transparent 32%);
+}
 #quality-story-canvas{display:block;width:100%;height:100%}
-.quality-story .quality-trail{position:relative;pointer-events:none}
+.quality-story .quality-trail{position:relative;z-index:2;pointer-events:none}
 .quality-story .quality-stage{
   display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
   width:100%;min-height:110vh;min-height:110svh;
@@ -1366,11 +1376,15 @@ html:has(.quality-action:modal){overflow:hidden;scrollbar-gutter:stable}
 .quality-story .quality-stage-copy > p:not(.quality-stage-label){color:#bed4c7;font-size:clamp(17px,1.3vw,20px);line-height:1.65}
 .quality-story .quality-stage-label{display:flex;gap:12px;align-items:center;color:#d5c58b;font-size:12px;margin:0 0 20px}
 .quality-story .quality-stage-label::before{content:"";width:26px;height:2px;background:#d5c58b;flex:none}
-.quality-story #quality-purpose{padding:130px clamp(24px,6vw,96px);display:flex}
+.quality-story #quality-purpose{
+  padding:130px clamp(24px,6vw,96px) 48px;display:flex;
+  min-height:100svh;justify-content:flex-end;
+}
 .quality-story .quality-purpose-scene{position:static;display:block;min-height:0;padding:0;isolation:auto}
 .quality-story .quality-action{pointer-events:auto}
 .quality-story #quality-review{
-  display:flex;min-height:100svh;margin:0;padding:150px clamp(24px,6vw,96px) 110px;
+  display:flex;align-items:center;justify-content:flex-start;min-height:0;margin:0;
+  padding:24px clamp(24px,6vw,96px) 110px;
 }
 .quality-story .quality-review-groups{
   width:min(1160px,100%);pointer-events:auto;
@@ -1378,12 +1392,70 @@ html:has(.quality-action:modal){overflow:hidden;scrollbar-gutter:stable}
   box-shadow:0 18px 55px #041c2455;
 }
 .quality-story .quality-submit{pointer-events:auto;width:auto;min-width:220px;margin-top:20px}
-.quality-chapters a{
-  display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:44px;
-  padding:8px 0;color:#85aa98;font-size:11px;text-decoration:none;
+.quality-chapters{
+  --quality-progress:0;position:fixed;right:14px;top:calc(50% + 32px);z-index:5;
+  display:flex;flex-direction:column;align-items:center;width:44px;
+  height:min(264px,calc(100svh - 160px));transform:translateY(-50%);
 }
-.quality-chapters a[aria-current="step"]{color:#e0d3a1}
-.quality-chapters a:focus-visible{outline:2px solid #d6eee1;outline-offset:3px}
+.quality-progress-track{
+  position:absolute;top:calc(100% / 12);bottom:calc(100% / 12);left:50%;width:7px;
+  transform:translateX(-50%);border-radius:999px;background:#bde8e61f;
+  box-shadow:inset 0 0 0 1px #bbdedb4d;overflow:hidden;pointer-events:none;
+}
+.quality-progress-water{
+  position:relative;display:block;width:100%;height:calc(var(--quality-progress) * 100%);
+  border-radius:inherit;background:linear-gradient(90deg,#419fc8,#8ddcf4 55%,#60c1df);
+  opacity:clamp(0,calc(var(--quality-progress) * 30),1);
+  box-shadow:inset 1px 0 0 #d6faff80;
+  transition:height .4s cubic-bezier(.2,.65,.25,1);
+}
+.quality-progress-flow{
+  position:absolute;inset:0;overflow:hidden;border-radius:inherit;
+  background:
+    radial-gradient(ellipse at 35% 30%,#ecffffbd 0 .7px,transparent 1.4px) 0 0 / 7px 19px repeat,
+    radial-gradient(ellipse at 70% 70%,#ecffff9c 0 .6px,transparent 1.3px) 0 0 / 7px 31px repeat,
+    linear-gradient(180deg,transparent,#efffff4a,transparent) 0 0 / 100% 48px repeat;
+  animation:quality-progress-flow-down 2.6s linear infinite;
+}
+.quality-progress-water::after{
+  content:"";position:absolute;left:-3px;bottom:-2px;width:13px;height:6px;
+  background:#c6f5ff;border-radius:50%;box-shadow:0 -2px 5px #e1ffff66;
+  animation:quality-progress-surface 1.8s ease-in-out infinite alternate;
+}
+.quality-chapters[data-flow="backward"] .quality-progress-flow{animation-direction:reverse}
+@keyframes quality-progress-flow-down{
+  to{background-position:0 38px,0 62px,0 48px}
+}
+@keyframes quality-progress-flow-right{
+  to{background-position:38px 0,62px 0,48px 0}
+}
+@keyframes quality-progress-surface{
+  from{transform:translate(-1px,-.7px) rotate(-12deg)}
+  to{transform:translate(1px,.7px) rotate(12deg)}
+}
+.quality-chapters a{
+  position:relative;display:grid;place-items:center;flex:1;width:44px;min-height:32px;
+  color:#cceff3;text-decoration:none;border-radius:999px;
+}
+.quality-chapter-dot{
+  width:10px;height:10px;border:1px solid #9fc5bd;border-radius:50%;background:#173e38;
+  box-shadow:0 0 0 3px #0a292a;transition:scale .2s ease,background .2s ease;
+}
+.quality-chapters a.is-passed .quality-chapter-dot{background:#74cfe9;border-color:#b4efff}
+.quality-chapters a[aria-current="step"] .quality-chapter-dot{
+  scale:1.4;background:#9de7ff;border-color:#e1faff;box-shadow:0 0 0 3px #0a292a,0 0 12px #7bd8ff66;
+}
+.quality-chapter-label{
+  position:absolute;right:calc(100% + 6px);top:50%;transform:translateY(-50%);
+  padding:5px 9px;border:1px solid #a7d6d42b;border-radius:8px;background:#082b2ae6;
+  color:#d4f3f4;font-size:12px;font-weight:600;white-space:nowrap;
+  opacity:0;visibility:hidden;pointer-events:none;
+}
+.quality-chapters a:is([aria-current="step"],:focus-visible) .quality-chapter-label{opacity:1;visibility:visible}
+.quality-chapters a:focus-visible{outline:2px solid #b1eeff;outline-offset:0}
+@media(hover:hover){
+  .quality-chapters a:hover .quality-chapter-label{opacity:1;visibility:visible}
+}
 .quality-story[data-story="review"] .home-scene-cue{opacity:0}
 @media(width > 760px){
   .quality-story .quality-stage .quality-action:modal{
@@ -1399,12 +1471,40 @@ html:has(.quality-action:modal){overflow:hidden;scrollbar-gutter:stable}
   .quality-story .quality-stage-copy{width:100%;max-width:560px;padding:0}
   .quality-story .quality-stage-copy h2{font-size:clamp(31px,7.8vw,44px)}
   .quality-story .quality-stage-copy > p:not(.quality-stage-label){font-size:17px;line-height:1.6}
-  .quality-story #quality-review{padding:38svh 18px 115px}
+  .quality-story #quality-purpose{padding-bottom:48px}
+  .quality-story #quality-review{padding:24px 18px 115px}
+  .quality-story-visual .home-scene-shade{
+    background:linear-gradient(0deg,#071f20 0%,#071f20f5 34%,#071f20ab 47%,transparent 65%);
+  }
   .quality-story .quality-review-groups{padding:10px}
   .quality-story .quality-submit{width:100%}
-  .quality-chapters{grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;left:8px;right:8px}
-  .quality-chapters a{display:grid;justify-items:center;justify-content:center;font-size:10px;line-height:1.3;padding:2px 0;gap:4px;min-height:48px}
-  .quality-chapters .story-chapter-number{grid-row:1}
-  .quality-chapters a span:first-child{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .quality-chapters{
+    flex-direction:row;left:50%;right:auto;top:auto;bottom:calc(12px + env(safe-area-inset-bottom));
+    width:min(340px,calc(100% - 32px));height:72px;padding:24px 8px 4px;
+    transform:translateX(-50%);border:1px solid #85aa983b;border-radius:20px;
+    background:#071f20f2;box-shadow:0 5px 20px #041b2240;
+  }
+  .quality-chapters a{min-width:0;min-height:44px;height:44px}
+  .quality-progress-track{
+    left:calc(8px + (100% - 16px) / 12);right:calc(8px + (100% - 16px) / 12);
+    top:43px;bottom:auto;width:auto;height:7px;transform:none;
+  }
+  .quality-progress-water{
+    width:calc(var(--quality-progress) * 100%);height:100%;
+    transition:width .4s cubic-bezier(.2,.65,.25,1);
+  }
+  .quality-progress-flow{
+    background-size:19px 7px,31px 7px,48px 100%;
+    animation-name:quality-progress-flow-right;
+  }
+  .quality-progress-water::after{left:auto;right:-2px;bottom:-3px;width:6px;height:13px}
+  .quality-chapter-label{
+    top:-19px;left:50%;right:auto;transform:translateX(-50%);padding:0;
+    border:0;border-radius:0;background:none;font-size:11px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .quality-progress-water,.quality-chapter-dot{transition:none}
+  .quality-progress-flow,.quality-progress-water::after{animation:none}
 }
 

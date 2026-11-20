@@ -6,10 +6,13 @@ let stopQualityStory = () => {};
 function startQualityStory(form) {
   const sections = [...form.querySelectorAll('[data-quality-story]')];
   const chapters = [...form.querySelectorAll('.quality-chapters a')];
+  const navigation = form.querySelector('.quality-chapters');
+  const meter = navigation.querySelector('[role="progressbar"]');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const scene = createHomeScene(form.querySelector('canvas'), {qualityOnly: true});
   const listeners = new AbortController();
   let frame;
+  let previousProgress = 0;
 
   function update() {
     frame = undefined;
@@ -24,12 +27,21 @@ function startQualityStory(form) {
       progress = index + Math.max(0, Math.min(1,
         (readingLine - centers[index]) / (centers[index + 1] - centers[index])));
     }
+    if (form.getBoundingClientRect().bottom <= innerHeight + 2) progress = sections.length - 1;
     const current = Math.round(progress);
+    if (Math.abs(progress - previousProgress) > .0001) {
+      navigation.dataset.flow = progress < previousProgress ? 'backward' : 'forward';
+    }
+    previousProgress = progress;
     form.dataset.story = sections[current].dataset.qualityStory;
     chapters.forEach((link, index) => {
+      link.classList.toggle('is-passed', index < progress);
       if (index === current) link.setAttribute('aria-current', 'step');
       else link.removeAttribute('aria-current');
     });
+    navigation.style.setProperty('--quality-progress', progress / (sections.length - 1));
+    meter.setAttribute('aria-valuenow', Math.round(progress / (sections.length - 1) * 100));
+    meter.setAttribute('aria-valuetext', chapters[current].getAttribute('aria-label'));
     scene.setProgress(progress);
   }
 

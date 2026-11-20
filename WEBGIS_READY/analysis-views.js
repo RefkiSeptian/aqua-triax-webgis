@@ -843,6 +843,7 @@ function quality() {
     </section>`;
   const chapters = [...stages.map(({id, label}) => [id, label]), ['purpose', 'Penggunaan'], ['review', 'Temuan']];
   controls.innerHTML = `<form id="quality-form" class="quality-story" data-story="tank">
+    <div class="quality-story-sequence">
     <div class="home-story-stage quality-story-visual" aria-hidden="true">
       <canvas id="quality-story-canvas"></canvas>
       <div class="home-scene-shade"></div>
@@ -882,6 +883,8 @@ function quality() {
           </div>
         </div>
       </section>
+    </div>
+    </div>
         <section class="quality-stage quality-review" id="quality-review" data-quality-story="review" aria-label="Tinjau temuan Anda">
           <div class="quality-review-groups">
             <fieldset class="checklist">
@@ -900,9 +903,11 @@ function quality() {
           </div>
           <button class="primary quality-submit" type="submit">Lihat rekomendasi</button>
         </section>
-    </div>
-    <nav class="story-chapters quality-chapters" aria-label="Urutan pemeriksaan air">
-      ${chapters.map(([id, label], index) => `<a href="#quality-${id}"><span>${label}</span><span class="story-chapter-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span></a>`).join('')}
+    <nav class="quality-chapters" aria-label="Progres cerita pemeriksaan air">
+      <span class="quality-progress-track" role="progressbar" aria-label="Posisi membaca cerita" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span class="quality-progress-water"><span class="quality-progress-flow"></span></span>
+      </span>
+      ${chapters.map(([id, label], index) => `<a href="#quality-${id}" aria-label="${label}, bagian ${index + 1} dari ${chapters.length}"><span class="quality-chapter-label">${label}</span><span class="quality-chapter-dot" aria-hidden="true"></span></a>`).join('')}
     </nav>
   </form>`;
   $('#use').value = previous.use;
