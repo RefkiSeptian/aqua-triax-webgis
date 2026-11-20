@@ -13,16 +13,19 @@ const guidedTour = (() => {
     },
     {
       title: 'Mulai dari ringkasan wilayah',
+      prepare: () => setDashboardSidebar(true),
       text: 'Lihat potensi tangkapan air hujan, jumlah bangunan, rata-rata hujan, dan cakupan acuan. Angka ini merangkum wilayah kajian; nilainya tidak mengikuti layer yang Anda nyalakan.',
       target: () => find('#dashboard-summary-content')
     },
     {
       title: 'Baca pola hujan',
+      prepare: () => setDashboardSidebar(true),
       text: 'Grafik sudah tampil di panel kiri. Pilih indikator untuk melihat pola bulanan, perubahan per tahun, indeks hujan, atau hari kering. Ini data historis, bukan prakiraan cuaca.',
       target: () => find('.dashboard-data-basis')
     },
     {
       title: 'Pilih layer dan wilayah',
+      prepare: () => setDashboardSidebar(false),
       text: 'Ketuk ikon tumpukan layer di kanan peta. Centang data yang ingin dilihat. Pada Batas administrasi, pilih wilayah berurutan dari provinsi sampai kalurahan. Data yang tersedia saat ini adalah Katongan.',
       target: layerTarget
     },
@@ -113,6 +116,7 @@ const guidedTour = (() => {
     if (next < 0 || next >= steps.length) return;
     index = next;
     const step = steps[index];
+    step.prepare?.();
     root.querySelector('.tour-step').textContent = `Langkah ${index + 1} dari ${steps.length}`;
     find('#tour-title').textContent = step.title;
     find('#tour-description').textContent = step.text;

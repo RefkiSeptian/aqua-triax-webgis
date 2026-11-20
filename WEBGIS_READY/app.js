@@ -584,6 +584,7 @@ async function start() {
   $('#rwh-locate').onclick = locateRwhUser;
   $('#rwh-open-tank').onclick = openQuickTank;
   bindRwhMapTools();
+  bindDashboardSidebar();
   $('#rwh-close').onclick = () => {
     const returnFocus = st.quickTank ? $('#rwh-open-tank') : $('#map');
     closeRwhBuilding();

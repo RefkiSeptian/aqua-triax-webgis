@@ -95,7 +95,7 @@ def check_app(page, url, screenshots, device):
     page.goto(url, wait_until="domcontentloaded")
     expect(page.locator("#load-status")).to_be_hidden()
     expect(page.locator('nav[aria-label="Fitur utama"] button')).to_have_text([
-        "Beranda", "Dashboard", "Cek Kondisi Air", "Tentang"
+        "Beranda", "Dashboard", "Cek Kondisi Air", "Metodologi", "Tentang"
     ])
     expect(page.locator("#home-view")).to_be_visible()
     expect(page.locator("#home-story-canvas")).to_be_visible()
@@ -132,12 +132,16 @@ def check_app(page, url, screenshots, device):
     expect(summary).to_contain_text("95,84%")
     expect(summary).to_contain_text("1.899 mm/tahun")
     info_panel = page.get_by_role("complementary", name="Ringkasan Katongan")
+    if info_panel.is_hidden():
+        page.locator('#dashboard-toggle-sidebar').click()
     climate = info_panel.get_by_role("region", name="Pola hujan Katongan")
     expect(climate).to_be_visible()
     expect(page.locator(".climate-month-bars button")).to_have_count(12)
     expect(page.locator("#rainfall-legend")).to_be_hidden()
     runoff = page.get_by_role("combobox", name="Koefisien limpasan (RC)")
     expect(runoff).to_be_hidden()
+    if device == 'mobile':
+        page.locator('#dashboard-close-sidebar').click()
     layer_button.click()
     if runoff.evaluate("el => getComputedStyle(el).appearance === 'base-select'"):
         runoff.click()
@@ -150,12 +154,15 @@ def check_app(page, url, screenshots, device):
     expect(page.locator("#rwh-potential-count")).to_contain_text("446.835 m³/tahun")
     runoff.select_option("0.8")
     close_tool.click()
+    if info_panel.is_hidden():
+        page.locator('#dashboard-toggle-sidebar').click()
     expect(info_panel.locator("#dashboard-summary-content")).to_be_visible()
     info_box, map_box = info_panel.bounding_box(), top_map.bounding_box()
     if device == "desktop":
         assert info_box["x"] + info_box["width"] < map_box["x"]
     else:
-        assert info_box["y"] >= map_box["y"] + map_box["height"]
+        assert info_box["y"] >= map_box["y"] and info_box["width"] <= map_box["width"]
+        page.locator('#dashboard-close-sidebar').click()
     check_rwh_location(page, url)
     if screenshots:
         page.screenshot(path=screenshots / f"harvesting-{device}.png")
@@ -191,6 +198,8 @@ def check_app(page, url, screenshots, device):
     page.keyboard.press("Escape")
     expect(selection).to_be_hidden()
 
+    if info_panel.is_hidden():
+        page.locator('#dashboard-toggle-sidebar').click()
     expect(climate).to_contain_text("Rata-rata wilayah kajian")
     expect(climate.get_by_role("button", name="Februari: 312,3 mm")).to_be_visible()
     expect(page.locator(".climate-month-bars button")).to_have_count(12)
@@ -234,6 +243,8 @@ def check_app(page, url, screenshots, device):
     expect(climate.get_by_role("heading", name="Rata-rata hujan per bulan")).to_be_visible()
     expect(page.locator('.main-tabs [data-tab="dashboard"]')).to_have_attribute("aria-current", "page")
 
+    if device == 'mobile':
+        page.locator('#dashboard-close-sidebar').click()
     page.get_by_role("button", name="Kalkulator tandon").click()
     expect(selection).to_be_visible()
     expect(top_map).to_be_visible()
@@ -788,7 +799,7 @@ def check_app(page, url, screenshots, device):
     expect(page.locator("#quality-next")).to_contain_text("Perubahan warna air")
     assert page.evaluate("document.documentElement.scrollWidth === innerWidth")
     tab(page, "about")
-    page.get_by_role("button", name="Metodologi & sumber").click()
+    page.locator('.main-tabs [data-tab="methods"]').click()
     expect(page.locator("#details")).to_contain_text("125 m")
     assert not page_errors, page_errors
     print(f"PASS {device}: overview, RWH, climate, YAS, distribution, Kesling, methodology")

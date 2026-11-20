@@ -117,6 +117,19 @@ def check(page, url, screenshots, name):
     expect(page.locator('#quality-next')).to_be_focused()
     expect(page.locator('#quality-next')).to_contain_text('Perubahan warna air')
     expect(page.locator('#quality-next')).not_to_contain_text('Bau tidak biasa')
+    assert page.evaluate("""() => {
+        const button = document.querySelector('.quality-submit').getBoundingClientRect();
+        const recap = document.querySelector('.quality-review-groups').getBoundingClientRect();
+        const results = document.querySelector('#details').getBoundingClientRect();
+        const story = getComputedStyle(document.querySelector('.quality-story')).backgroundColor;
+        const background = getComputedStyle(document.querySelector('.shell')).backgroundColor;
+        return results.top - button.bottom <= 48 && results.top >= button.bottom &&
+            Math.abs(results.left - recap.left) < 1 && Math.abs(results.width - recap.width) < 1 &&
+            background === story;
+    }"""), f'{name}: results should share the review background, spacing, and alignment'
+    if screenshots:
+        page.locator('.quality-submit').evaluate("el => scrollTo({top: scrollY + el.getBoundingClientRect().top - innerHeight * .25, behavior:'instant'})")
+        page.screenshot(path=str(screenshots / f'quality-story-{name}-results-transition.png'))
     page.locator('.main-tabs [data-tab="home"]').click()
     expect(canvas).to_be_hidden()
     expect(page.locator('#home-story-canvas')).to_be_visible()

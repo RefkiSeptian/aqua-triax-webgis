@@ -24,8 +24,9 @@
       </button>
       <nav class="tabs main-tabs" aria-label="Fitur utama">
         <button class="tab active" data-tab="home" aria-current="page">Beranda</button>
-        <button class="tab" data-tab="dashboard">Dashboard</button>
+        <button class="tab" data-tab="dashboard">Dash<wbr>board</button>
         <button class="tab" data-tab="quality">Cek Kondisi Air</button>
+        <button class="tab" data-tab="methods" disabled>Metodo<wbr>logi</button>
         <button class="tab" data-tab="about">Tentang</button>
       </nav>
     </header>
@@ -65,7 +66,7 @@
               <p class="story-kicker">Potensi air hujan</p>
               <h2 id="story-harvest-title">Saat hujan datang,<br>mulai dari atap rumah.</h2>
               <p>Air mengikuti kemiringan atap menuju talang. Aliran awal dialihkan terlebih dahulu, kemudian air berikutnya masuk ke tandon.</p>
-              <p class="story-feature">Peta potensi air hujan membantu memperkirakan tampungan dari setiap bangunan.</p>
+              <p class="story-feature">Peta memperkirakan potensi air hujan dari seluruh footprint atap bangunan yang dipilih.</p>
             </div>
           </section>
           <section id="story-storage" class="home-story-step" data-story-step="storage" aria-labelledby="story-storage-title">
@@ -151,18 +152,26 @@
         <aside class="about-project-scope" aria-labelledby="about-scope-title">
           <h3 id="about-scope-title">Cakupan kajian</h3>
           <p>Pemetaan awal menggunakan data Kalurahan Katongan, Gunungkidul.</p>
-          <button type="button" class="about-methods-link" data-tab="methods" disabled>Metodologi &amp; sumber</button>
         </aside>
       </section>
     </main>
     <p id="load-status" class="notice project-load-status" role="status">Memuat data penelitian…</p>
     <div id="dashboard-map-layout" class="dashboard-map-layout" hidden>
-      <aside class="dashboard-panel" aria-labelledby="dashboard-summary-title">
-        <h2 id="dashboard-summary-title">Ringkasan Katongan</h2>
+      <div class="dashboard-sidebar-toolbar">
+        <button id="dashboard-toggle-sidebar" class="dashboard-start-tour" type="button" aria-controls="dashboard-sidebar" aria-expanded="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-12-3 4 3 4"/></svg>
+          <span>Ringkasan wilayah</span>
+        </button>
         <button id="dashboard-start-tour" class="dashboard-start-tour" type="button" disabled>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9Z"/></svg>
           Mulai tur
         </button>
+      </div>
+      <aside id="dashboard-sidebar" class="dashboard-panel" aria-labelledby="dashboard-summary-title">
+        <div class="dashboard-panel-heading">
+          <h2 id="dashboard-summary-title" tabindex="-1">Ringkasan Katongan</h2>
+          <button id="dashboard-close-sidebar" type="button" aria-label="Tutup ringkasan wilayah">×</button>
+        </div>
         <p id="dashboard-summary-context"></p>
         <div id="dashboard-summary-content"></div>
         <section class="dashboard-data-basis" aria-labelledby="climate-title">

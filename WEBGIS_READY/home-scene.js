@@ -1,5 +1,29 @@
 'use strict';
 
+function createHomeSceneLayout() {
+  const road = [[-23, .06, 11], [-13, .06, 7], [-4, .06, 9], [5, .06, 7], [14, .06, 5], [24, .06, 9]];
+  const roads = [
+    {points: [[-60, .06, 25.8], ...road, [60, .06, 23.4]], width: 3.4, surface: '#394747', markings: true},
+    {points: [[11, .06, 7 - 6 / 9 * 2], [11, .06, -65]], width: 2, surface: '#394747'}
+  ];
+  const roofOutlet = [-1.1, 3.35, 3.1];
+  const gutters = [
+    [[-1.7, 3.55, -2.8], [-1.7, 3.45, 2.8], roofOutlet],
+    [[-8.3, 3.55, -2.8], [-8.3, 3.45, 2.8], [-8.3, 3.4, 3.1], roofOutlet]
+  ];
+  const firstFlush = [roofOutlet, [-1.1, .35, 3.1]];
+  const deliveryPath = road.slice(0, 4);
+  const receivingTank = [7.7, 0, 2.8];
+  const deliverySite = [receivingTank[0], .1, receivingTank[2]];
+  const houses = [
+    [-5, 0, 6, 5, 3.5], [-13, -13, 4.5, 4, 2.5], [6, -14, 5, 4, 2.9],
+    [16, -5, 4, 4, 2.6], [-16, 2, 4, 3.5, 2.3], [12, 14, 4.5, 4, 2.5], [-3, -25, 4, 4, 2.5]
+  ];
+  const trees = [[-10, 4], [-18, -5], [14, -20], [20, 13], [-20, 14], [7, -24], [19, -15], [-8, -18]];
+  const inletRoute = (height, radius) => [roofOutlet, [.1, 3.2, 3.1], [.1, height - .25, .2], [2 - radius, height - .25, .2]];
+  return {road, roads, roofOutlet, gutters, firstFlush, deliveryPath, deliverySite, receivingTank, houses, trees, inletRoute};
+}
+
 function createHomeScene(canvas, {qualityOnly = false} = {}) {
   const ctx = canvas.getContext('2d');
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -13,21 +37,12 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     {eye: [9, 5, 10], focus: [5.6, 1.1, 2.6]}
   ] : [
     {eye: [22, 17, 32], focus: [-1, 1, -1]},
-    {eye: [10, 10, 20], focus: [-2, 2, 1]},
+    {eye: [9, 17, 23], focus: [-2, 2, 1]},
     {eye: [9, 8, 15], focus: [1, 2, .4]},
     {eye: [22, 28, 40], focus: [0, 1, 4]},
     {eye: [8, 5, 9], focus: [3.5, 1.5, 1.2]}
   ];
-  const road = [[-23, .06, 11], [-13, .06, 7], [-4, .06, 9], [5, .06, 7], [14, .06, 5], [24, .06, 9]];
-  const gutter = [[-1.7, 3.55, -2.8], [-1.7, 3.55, 2.8], [-1.1, 3.45, 3.1]];
-  const firstFlush = [[-1.1, 3.45, 3.1], [-1.1, .35, 3.1]];
-  const deliveryPath = road.slice(0, 4);
-  const deliverySite = [5, .1, 7];
-  const houses = [
-    [-5, 0, 6, 5, 3.5], [-13, -13, 4.5, 4, 2.5], [6, -14, 5, 4, 2.9],
-    [16, -5, 4, 4, 2.6], [-16, 5, 4, 3.5, 2.3], [12, 14, 4.5, 4, 2.5], [-3, -25, 4, 4, 2.5]
-  ];
-  const trees = [[-10, 8], [-18, -5], [12, -19], [20, 13], [-20, 14], [7, -24], [19, -15], [-8, -18]];
+  const {roads, gutters, firstFlush, deliveryPath, deliverySite, receivingTank, houses, trees, inletRoute} = createHomeSceneLayout();
   const rainDrops = Array.from({length: 1700}, (_, index) => {
     const random = offset => {
       const value = Math.sin(index * 127.1 + offset * 311.7) * 43758.5453;
@@ -62,6 +77,7 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
   let state;
   let camera;
   let faces = [];
+  let roadMeshes;
 
   const lerp = (a, b, t) => a + (b - a) * t;
   const clamp = value => Math.max(0, Math.min(1, value));
@@ -239,7 +255,7 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     faces.push({points, color, opacity, depth: dot(subtract(center, camera.eye), camera.forward)});
   }
 
-  function box(x, y, z, w, h, d, color, angle = 0) {
+  function box(x, y, z, w, h, d, color, angle = 0, capTop = true) {
     const point = (dx, dy, dz) => [x + dx * Math.cos(angle) - dz * Math.sin(angle), y + dy, z + dx * Math.sin(angle) + dz * Math.cos(angle)];
     const a = point(-w / 2, 0, -d / 2);
     const b = point(w / 2, 0, -d / 2);
@@ -250,7 +266,7 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     face([top(b), top(c), c, b], tint(color, .84));
     face([top(c), top(e), e, c], color);
     face([top(e), top(a), a, e], tint(color, 1.15));
-    face([top(e), top(c), top(b), top(a)], tint(color, 1.3));
+    if (capTop) face([top(e), top(c), top(b), top(a)], tint(color, 1.3));
   }
 
   function cylinder(x, y, z, radius, h, color, opacity = 1, capTop = true) {
@@ -269,7 +285,9 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
   }
 
   function house(x, z, w, d, h, index) {
-    box(x, 0, z, w, h, d, index === 0 ? '#52766b' : '#36574d');
+    // The roof already closes the building. A hidden flat lid can overpaint it
+    // when faces are sorted by depth, creating a false green hole in the roof.
+    box(x, 0, z, w, h, d, index === 0 ? '#52766b' : '#36574d', 0, false);
     const leftFront = [x - w / 2 - .3, h, z + d / 2 + .3];
     const rightFront = [x + w / 2 + .3, h, z + d / 2 + .3];
     const leftBack = [leftFront[0], h, z - d / 2 - .3];
@@ -374,10 +392,103 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     if (qualityOnly) return;
     const parcels = [[-23, -24, 11, 9], [-16, -10, 12, 10], [3, -25, 12, 8], [7, -10, 15, 9], [-22, 12, 13, 8], [3, 10, 12, 10]];
     parcels.forEach(([x, z, w, d], index) => polygon([[x, .01, z], [x + w, .01, z], [x + w, .01, z + d], [x, .01, z + d]], blend(index % 2 ? '#a28b5b' : '#baa26c', index % 2 ? '#76ac78' : '#c4bc75', 1 - state.dryness) + '24', '#bce7d11c'));
-    line(road, '#90aa8e22', width < 761 ? 10 : 20);
-    line(road, '#233e34', width < 761 ? 7 : 14);
-    line([[0, .04, 9], [0, .04, -19]], '#90aa8e18', width < 761 ? 8 : 14);
-    line([[0, .04, 9], [0, .04, -19]], '#233e34', width < 761 ? 5 : 9);
+    drawRoads();
+  }
+
+  // World-space ribbons keep road width and painted markings in perspective.
+  function roadEdges(points, roadWidth) {
+    const normals = points.slice(1).map((point, index) => {
+      const dx = point[0] - points[index][0];
+      const dz = point[2] - points[index][2];
+      const length = Math.hypot(dx, dz);
+      return [-dz / length, dx / length];
+    });
+    const left = [], right = [];
+    points.forEach((point, index) => {
+      const previous = normals[Math.max(0, index - 1)];
+      const next = normals[Math.min(normals.length - 1, index)];
+      const nx = previous[0] + next[0], nz = previous[1] + next[1];
+      const length = Math.hypot(nx, nz);
+      const normal = [nx / length, nz / length];
+      const offset = roadWidth / 2 / Math.max(.65, dot(normal, next));
+      left.push([point[0] + normal[0] * offset, point[1], point[2] + normal[1] * offset]);
+      right.push([point[0] - normal[0] * offset, point[1], point[2] - normal[1] * offset]);
+    });
+    return {left, right};
+  }
+
+  function roadSurface(points, roadWidth, color) {
+    if (points.length < 2) return null;
+    const {left, right} = roadEdges(points, roadWidth);
+    return {points: [...left, ...right.reverse()], color};
+  }
+
+  function insideRoad(point, route, padding = .12) {
+    return route.points.slice(1).some((end, index) => {
+      const start = route.points[index];
+      const dx = end[0] - start[0], dz = end[2] - start[2];
+      const fraction = clamp(((point[0] - start[0]) * dx + (point[2] - start[2]) * dz) / (dx * dx + dz * dz));
+      return Math.hypot(point[0] - start[0] - fraction * dx, point[2] - start[2] - fraction * dz) < route.width / 2 + padding;
+    });
+  }
+
+  function buildRoads() {
+    const surfaces = [];
+    const addSurface = (points, roadWidth, color) => {
+      const surface = roadSurface(points, roadWidth, color);
+      if (surface) surfaces.push(surface);
+    };
+    // Lay all shoulders before all asphalt so the junction remains one surface.
+    roads.forEach(route => addSurface(route.points, route.width + .55, '#71806a'));
+    roads.forEach(route => addSurface(route.points, route.width, route.surface));
+    roads.forEach(route => {
+      const edges = roadEdges(route.points, route.width - .23);
+      for (const edge of [edges.left, edges.right]) {
+        let segment = [];
+        const length = edge.slice(1).reduce((sum, point, index) => sum + Math.hypot(...subtract(point, edge[index])), 0);
+        const count = Math.ceil(length / .4);
+        for (let index = 0; index <= count; index++) {
+          const point = along(edge, index / count);
+          if (roads.some(other => other !== route && insideRoad(point, other))) {
+            addSurface(segment, .045, '#c2c7af');
+            segment = [];
+          } else segment.push(point);
+        }
+        addSurface(segment, .045, '#c2c7af');
+      }
+      if (!route.markings) return;
+      const length = route.points.slice(1).reduce((sum, point, index) => sum + Math.hypot(...subtract(point, route.points[index])), 0);
+      for (let distance = .5; distance < length; distance += 2.3) {
+        const start = along(route.points, distance / length);
+        const end = along(route.points, Math.min(length, distance + 1.15) / length);
+        if (!roads.some(other => other !== route && insideRoad(start, other, .5))) {
+          addSurface([start, end], .075, '#c8c4a0');
+        }
+      }
+    });
+    return surfaces;
+  }
+
+  function drawRoads() {
+    roadMeshes ??= buildRoads();
+    for (const surface of roadMeshes) {
+      // Roads extend beyond the scene. Clip their near ends instead of dropping
+      // the entire surface when an endpoint passes behind the moving camera.
+      const clipped = [];
+      let previous = surface.points.at(-1);
+      let previousDepth = dot(subtract(previous, camera.eye), camera.forward) - .6;
+      for (const point of surface.points) {
+        const depth = dot(subtract(point, camera.eye), camera.forward) - .6;
+        if ((depth >= 0) !== (previousDepth >= 0)) {
+          const fraction = previousDepth / (previousDepth - depth);
+          clipped.push(previous.map((value, axis) => lerp(value, point[axis], fraction)));
+        }
+        if (depth >= 0) clipped.push(point);
+        previous = point;
+        previousDepth = depth;
+      }
+      if (clipped.length >= 3) polygon(clipped, surface.color, null);
+    }
   }
 
   function addRain() {
@@ -459,9 +570,9 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     }
 
     if (state.delivery > .02) {
-      cylinder(6.8, .12, 8.5, 1.05, 1.8, '#6d9e91', .38, false);
+      cylinder(receivingTank[0], .12, receivingTank[2], 1.05, 1.8, '#6d9e91', .38, false);
       const received = .12 + .7 * clamp((state.deliveryTime - 4) / 5);
-      cylinder(6.8, .14, 8.5, .96, Math.max(.03, received * 1.8), '#79ccd1', .65 * state.delivery);
+      cylinder(receivingTank[0], .14, receivingTank[2], .96, Math.max(.03, received * 1.8), '#79ccd1', .65 * state.delivery);
     }
     if (state.storage > .02) {
       cylinder(5, .02, 2.5, .67, .7, '#bead79', .55 * state.storage, false);
@@ -491,14 +602,16 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
   }
 
   function drawCapture() {
-    const inlet = [[-1.1, 3.45, 3.1], [.1, 3.2, 3.1], [.1, state.tankHeight - .25, .2], [2 - state.radius, state.tankHeight - .25, .2]];
-    line(gutter, '#a3c4b4', width < 761 ? 3 : 5);
+    const inlet = inletRoute(state.tankHeight, state.radius);
+    gutters.forEach(gutter => line(gutter, '#a3c4b4', width < 761 ? 3 : 5));
     line(firstFlush, '#a3c4b4', width < 761 ? 2.5 : 4);
     line(inlet, '#a3c4b4', width < 761 ? 3 : 5);
     ctx.save();
     ctx.globalAlpha = Math.max(state.rain, state.incoming);
-    line(gutter, '#7edbdf', width < 761 ? 1.5 : 2.5, 6);
-    for (let index = 0; index < 7; index++) glowPoint(along(gutter, (index / 7 + clock * .1) % 1), width < 761 ? 1 : 1.6, '#d1ffff');
+    for (const gutter of gutters) {
+      line(gutter, '#7edbdf', width < 761 ? 1.5 : 2.5, 6);
+      for (let index = 0; index < 7; index++) glowPoint(along(gutter, (index / 7 + clock * .1) % 1), width < 761 ? 1 : 1.6, '#d1ffff');
+    }
     ctx.restore();
     if (state.diverting) {
       line(firstFlush, '#cbb779', width < 761 ? 1.5 : 2.5, 4);
@@ -515,12 +628,18 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     if (state.rain < .02) return;
     ctx.save();
     ctx.globalAlpha = state.rain * .7;
-    for (let index = 0; index < 14; index++) {
-      const phase = (clock * .17 + index * .13) % 1;
-      const x = -5 + phase * 3.25;
-      const z = -2.4 + (index * 1.37 % 4.8);
-      const y = 3.5 + (1 - (x + 5) / 3.3) * 2.16;
-      line([[x, y + .04, z], [x + .14, y - .05, z]], '#a8e7e5', 1, 3);
+    for (const side of [-1, 1]) {
+      const roofNormal = [side * 2.16, 3.3, 0];
+      const roofCenter = [-5 + side * 1.65, 4.58, 0];
+      if (dot(roofNormal, subtract(camera.eye, roofCenter)) <= 0) continue;
+      for (let index = 0; index < 14; index++) {
+        const phase = (clock * .17 + index * .13) % 1;
+        const distance = phase * 3.25;
+        const next = Math.min(3.3, distance + .14);
+        const z = -2.4 + (index * 1.37 % 4.8);
+        const roofPoint = run => [-5 + side * run, 3.54 + (1 - run / 3.3) * 2.16, z];
+        line([roofPoint(distance), roofPoint(next)], '#a8e7e5', 1, 3);
+      }
     }
     ctx.restore();
     if (state.waterFraction > .92) {
@@ -549,10 +668,9 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
     const t = state.deliveryTime;
     ctx.save();
     ctx.globalAlpha = state.delivery;
-    for (let index = 0; index < 10; index++) glowPoint(along(deliveryPath, (index / 10 + clock * .025) % 1), 1.5, '#dccb8b', .6);
     glowPoint(deliverySite, 3, '#e9d593');
     if (t >= 4 && t < 12) {
-      const hose = [vehiclePoint(0, .8, .7), [6, .5, 8], [6, 1.4, 8.5], [5.85, 1.4, 8.5]];
+      const hose = [vehiclePoint(0, .8, -.7), [5.7, .12, 4.3], [receivingTank[0] - 1.1, .12, receivingTank[2]], [receivingTank[0] - 1.05, 1.4, receivingTank[2]]];
       line(hose, '#83afa2', width < 761 ? 2.5 : 4);
       if (t < 9) {
         for (let index = 0; index < 8; index++) glowPoint(along(hose, (index / 8 + clock * .1) % 1), 1.4, '#bcefe8');
@@ -564,13 +682,13 @@ function createHomeScene(canvas, {qualityOnly = false} = {}) {
       const coverage = smooth((t - 9) / 2);
       const coverageOpacity = state.delivery * (1 - smooth((t - 17) / 1));
       const coverageRadius = 21;
-      ring(5, 7, coverageRadius * coverage, .4 * coverage * coverageOpacity);
+      ring(deliverySite[0], deliverySite[2], coverageRadius * coverage, .4 * coverage * coverageOpacity);
       ctx.globalAlpha = coverage * coverageOpacity;
       line([[-8.2, .1, -2.7], [-1.8, .1, -2.7], [-1.8, .1, 2.7], [-8.2, .1, 2.7], [-8.2, .1, -2.7]], '#dfd09a', 1.8, 8);
       label('Rumah dalam cakupan', [-5, 5.8, 0], -30, -32);
     }
     ctx.restore();
-    label('Titik penyaluran', [6.8, 1.9, 8.5], 28, -35);
+    label('Titik penyaluran', [receivingTank[0], 1.9, receivingTank[2]], 28, -35);
   }
 
   function drawObservation() {

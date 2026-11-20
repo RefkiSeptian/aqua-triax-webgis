@@ -13,6 +13,50 @@ class QuietHandler(SimpleHTTPRequestHandler):
         pass
 
 
+def check_sidebar(page, screenshots, name):
+    panel = page.locator('#dashboard-sidebar')
+    toggle = page.locator('#dashboard-toggle-sidebar')
+    if panel.is_visible():
+        page.get_by_role('button', name='Tutup ringkasan wilayah', exact=True).click()
+    expect(panel).to_be_hidden()
+    expect(toggle).to_have_attribute('aria-expanded', 'false')
+    page.wait_for_timeout(150)
+    wide = page.locator('#map').bounding_box()['width']
+    view = page.evaluate('({center: st.map.getCenter(), zoom: st.map.getZoom()})')
+    toggle.click()
+    expect(panel).to_be_visible()
+    expect(page.locator('#dashboard-summary-title')).to_be_focused()
+    expect(toggle).to_have_attribute('aria-expanded', 'true')
+    page.wait_for_timeout(150)
+    narrow = page.locator('#map').bounding_box()['width']
+    if name == 'mobile':
+        assert narrow == wide
+        assert panel.bounding_box()['width'] <= page.viewport_size['width']
+    else:
+        assert narrow < wide - 200
+    page.locator('#climate-series').select_option('annual')
+    if screenshots:
+        page.screenshot(path=str(screenshots / f'sidebar-{name}-open.png'))
+    page.get_by_role('button', name='Tutup ringkasan wilayah', exact=True).click()
+    expect(panel).to_be_hidden()
+    expect(toggle).to_be_focused()
+    page.wait_for_timeout(150)
+    assert page.evaluate('''view => st.map.getZoom() === view.zoom &&
+        st.map.distance(st.map.getCenter(), view.center) < 30 &&
+        Math.abs(st.map.getSize().x - document.querySelector('#map').clientWidth) <= 1''', view)
+    if screenshots:
+        page.screenshot(path=str(screenshots / f'sidebar-{name}-closed.png'))
+    toggle.click()
+    expect(page.locator('#climate-series')).to_have_value('annual')
+    page.locator('#dashboard-summary-title').press('Escape')
+    expect(panel).to_be_hidden()
+    page.locator('.main-tabs [data-tab="about"]').click()
+    page.locator('.main-tabs [data-tab="dashboard"]').click()
+    expect(panel).to_be_hidden()
+    assert page.evaluate('document.documentElement.scrollWidth === innerWidth')
+    print(f'PASS sidebar {name}: collapse, reopen, chart value, map resize/center, Escape, navigation', flush=True)
+
+
 def check_tour(page, url, screenshots, name):
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
@@ -20,6 +64,7 @@ def check_tour(page, url, screenshots, name):
     page.bring_to_front()
     expect(page.locator("#load-status")).to_be_hidden(timeout=60000)
     page.locator('.main-tabs [data-tab="dashboard"]').click()
+    check_sidebar(page, screenshots, name)
     starter = page.get_by_role("button", name="Mulai tur", exact=True)
     before = page.evaluate("""() => JSON.stringify({
         buildings: st.showRwhBuildings, rainfall: st.showRainfall,
