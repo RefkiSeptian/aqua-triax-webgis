@@ -175,6 +175,7 @@ function updateDistributionMap() {
 }
 
 function chooseTab(key) {
+  guidedTour.close(false);
   if (key === 'dashboard') key = 'rwh';
   if (st.tab === 'rwh' && key !== 'rwh') {
     closeRwhMapTool();
@@ -349,10 +350,10 @@ function methods(){const net=st.networkSummary;metrics.innerHTML=card('Kandidat 
 }
 
 function render() {
-  stopQualityPipeFlow();
+  stopQualityStory();
   const home = st.tab === 'home';
   const about = st.tab === 'about';
-  $('.masthead').classList.toggle('masthead-home', home);
+  $('.masthead').classList.toggle('masthead-home', home || st.tab === 'quality');
   $('#home-view').hidden = !home;
   if (home) homeStory.start();
   else homeStory.stop();
@@ -640,6 +641,7 @@ async function start() {
     render();
     status.hidden = true;
     buttons.forEach(button => { button.disabled = false; });
+    guidedTour.enable();
   } catch (error) {
     status.setAttribute('role', 'alert');
     status.textContent = `Gagal memuat WebGIS. Buka melalui RUN_WINDOWS.bat atau server HTTP lokal. ${error.message}`;

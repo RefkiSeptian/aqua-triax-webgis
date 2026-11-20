@@ -1,10 +1,17 @@
 'use strict';
 
-function createHomeScene(canvas) {
+function createHomeScene(canvas, {qualityOnly = false} = {}) {
   const ctx = canvas.getContext('2d');
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const cue = canvas.parentElement.querySelector('.home-scene-cue strong');
-  const cameras = [
+  const cameras = qualityOnly ? [
+    {eye: [10, 7, 14], focus: [2, 1.6, .3]},
+    {eye: [8, 5, 9], focus: [4.4, 1.1, 2.1]},
+    {eye: [8, 5.5, 10], focus: [5.4, 1, 2.5]},
+    {eye: [7.3, 4.2, 7.6], focus: [5, .9, 2.5]},
+    {eye: [9, 6, 11], focus: [4.3, 1.1, 2.1]},
+    {eye: [9, 5, 10], focus: [5.6, 1.1, 2.6]}
+  ] : [
     {eye: [22, 17, 32], focus: [-1, 1, -1]},
     {eye: [10, 10, 20], focus: [-2, 2, 1]},
     {eye: [9, 8, 15], focus: [1, 2, .4]},
@@ -86,6 +93,19 @@ function createHomeScene(canvas) {
   }
 
   function getState() {
+    if (qualityOnly) {
+      const observations = ['lid', 'odor', 'color', 'particles', 'purpose', 'record'];
+      const cues = ['Periksa sumber air dan tandon', 'Amati bau yang tidak biasa',
+        'Bandingkan tampilan warna air', 'Amati partikel dan endapan',
+        'Tentukan penggunaan air', 'Tinjau temuan sebelum rekomendasi'];
+      return {
+        radius: 1.6, tankHeight: 3.3, waterFraction: .72,
+        rain: 0, storage: 0, delivery: 0, quality: 1, dryness: 0,
+        incoming: 0, diverting: false, firstFlushLevel: 0,
+        qualityTime: chapter === 0 ? 1.7 : chapter === 5 ? 20 + (motion.matches ? 3 : chapterTime % 4) : 8,
+        observation: observations[chapter], cue: cues[chapter]
+      };
+    }
     const elapsed = motion.matches ? 12 : chapterTime;
     const storageTime = elapsed % 20;
     let large = 0;
@@ -117,7 +137,10 @@ function createHomeScene(canvas) {
       'Cuaca kering · persediaan menipis',
       elapsed < 4 ? 'Aliran awal masuk ke pengalih' : 'Air berikutnya mengisi tandon',
       `${large > .5 ? 'Tandon lebih besar' : 'Tandon lebih kecil'} · ${useTime < 1.6 ? 'pengisian' : storageLevel * storageHeight < 1.05 ? 'aliran mulai berhenti' : 'pemakaian rumah'}`,
-      deliveryTime < 4 ? 'Mobil tangki menuju titik penyaluran' : deliveryTime < 12 ? 'Penyaluran dan cakupan ke rumah' : 'Mobil tangki meninggalkan titik penyaluran',
+      deliveryTime < 4 ? 'Mobil tangki menuju titik penyaluran'
+        : deliveryTime < 9 ? 'Air disalurkan ke tandon'
+        : deliveryTime < 12 ? 'Penyaluran selesai · cakupan ke rumah'
+        : 'Mobil tangki meninggalkan titik penyaluran',
       titles[observation]
     ];
     return {
@@ -340,6 +363,7 @@ function createHomeScene(canvas) {
 
     for (let z = -65; z <= 20; z += 4) line([[-60, 0, z], [60, 0, z]], '#8dcaac12', .7);
     for (let x = -60; x <= 60; x += 4) line([[x, 0, -65], [x, 0, 20]], '#8dcaac12', .7);
+    if (qualityOnly) return;
     const parcels = [[-23, -24, 11, 9], [-16, -10, 12, 10], [3, -25, 12, 8], [7, -10, 15, 9], [-22, 12, 13, 8], [3, 10, 12, 10]];
     parcels.forEach(([x, z, w, d], index) => polygon([[x, .01, z], [x + w, .01, z], [x + w, .01, z + d], [x, .01, z + d]], blend(index % 2 ? '#a28b5b' : '#baa26c', index % 2 ? '#76ac78' : '#c4bc75', 1 - state.dryness) + '24', '#bce7d11c'));
     line(road, '#90aa8e22', width < 761 ? 10 : 20);
@@ -419,9 +443,11 @@ function createHomeScene(canvas) {
     cylinder(2, h + .15, .2, radius * .64, .18, '#669d8a', .75, false);
     const lift = state.observation === 'lid' ? Math.sin(Math.min(1, state.qualityTime / 3.5) * Math.PI) * .8 * state.quality : 0;
     cylinder(2, h + .33 + lift, .2, radius * .72, .13, '#88b8a1');
-    cylinder(-1.1, .3, 3.1, .23, 2.75, '#7a9e83', .45, false);
-    cylinder(-1.1, .31, 3.1, .17, Math.max(.03, 2.6 * state.firstFlushLevel), '#bfa669', .7);
-    cylinder(-1.1, .32 + 2.6 * state.firstFlushLevel, 3.1, .12, .15, '#d5e4c2');
+    if (!qualityOnly) {
+      cylinder(-1.1, .3, 3.1, .23, 2.75, '#7a9e83', .45, false);
+      cylinder(-1.1, .31, 3.1, .17, Math.max(.03, 2.6 * state.firstFlushLevel), '#bfa669', .7);
+      cylinder(-1.1, .32 + 2.6 * state.firstFlushLevel, 3.1, .12, .15, '#d5e4c2');
+    }
 
     if (state.delivery > .02) {
       cylinder(6.8, .12, 8.5, 1.05, 1.8, '#6d9e91', .38, false);
@@ -432,11 +458,21 @@ function createHomeScene(canvas) {
       cylinder(5, .02, 2.5, .67, .7, '#bead79', .55 * state.storage, false);
       cylinder(5, .04, 2.5, .6, .4, '#7fcfd4', .65 * state.storage);
     }
-    if (state.quality > .02 && state.observation !== 'lid') {
+    if (qualityOnly && state.observation === 'purpose') {
+      cylinder(5, 0, 2.5, .95, .75, '#659e74', .8, false);
+      cylinder(5, .04, 2.5, .85, .44, '#8cdbdf', .7);
+      box(6.1, .6, 2.5, 1.25, .12, .23, '#659e74');
+    } else if (state.quality > .02 && state.observation !== 'lid') {
       cylinder(5, 0, 2.5, .68, 1.4, '#c7f3eb', .2 * state.quality, false);
       const color = state.observation === 'color' ? '#c9a45d' : state.observation === 'particles' ? '#8b9f96' : '#8cdbdf';
       const fraction = state.observation === 'sample' ? clamp((state.qualityTime - 3.5) / 2.5) : 1;
       cylinder(5, .03, 2.5, .62, Math.max(.03, fraction * .94), color, .65 * state.quality);
+      if (qualityOnly && state.observation === 'color') {
+        for (const [x, color] of [[3.3, '#8cdbdf'], [6.7, '#95754e']]) {
+          cylinder(x, 0, 2.5, .68, 1.4, '#c7f3eb', .2, false);
+          cylinder(x, .03, 2.5, .62, .94, color, .65);
+        }
+      }
     }
     if (state.quality > .02 && state.observation === 'record') {
       box(6.4, .15, 2.8, 1.35, 1.8, .08, '#ccdbbf');
@@ -508,11 +544,18 @@ function createHomeScene(canvas) {
     if (t >= 4 && t < 12) {
       const hose = [vehiclePoint(0, .8, .7), [6, .5, 8], [6, 1.4, 8.5], [5.85, 1.4, 8.5]];
       line(hose, '#83afa2', width < 761 ? 2.5 : 4);
-      for (let index = 0; index < 8; index++) glowPoint(along(hose, (index / 8 + clock * .1) % 1), 1.4, '#bcefe8');
-      const coverage = smooth((t - 4) / 2);
+      if (t < 9) {
+        for (let index = 0; index < 8; index++) glowPoint(along(hose, (index / 8 + clock * .1) % 1), 1.4, '#bcefe8');
+      }
+    }
+    // Reveal the coverage only after the receiving tank finishes filling at 9 s.
+    // Keep it visible during departure, then fade before the next delivery cycle.
+    if (t > 9) {
+      const coverage = smooth((t - 9) / 2);
+      const coverageOpacity = state.delivery * (1 - smooth((t - 17) / 1));
       const coverageRadius = 21;
-      ring(5, 7, coverageRadius * coverage, .4 * state.delivery);
-      ring(5, 7, coverageRadius, .12 * state.delivery);
+      ring(5, 7, coverageRadius * coverage, .4 * coverage * coverageOpacity);
+      ctx.globalAlpha = coverage * coverageOpacity;
       line([[-8.2, .1, -2.7], [-1.8, .1, -2.7], [-1.8, .1, 2.7], [-8.2, .1, 2.7], [-8.2, .1, -2.7]], '#dfd09a', 1.8, 8);
       label('Rumah dalam cakupan', [-5, 5.8, 0], -30, -32);
     }
@@ -531,6 +574,14 @@ function createHomeScene(canvas) {
     ctx.save();
     ctx.globalAlpha = state.quality;
     line(outlet, '#8bb9a5', width < 761 ? 2.5 : 4);
+    if (state.observation === 'purpose') {
+      line([[5, 1.9, 2.5], [5, .5, 2.5]], '#a6eff2', 2.4, 6);
+      for (let index = 0; index < 7; index++) {
+        glowPoint([5, .5 + (index / 7 + clock * .3) % 1 * 1.4, 2.5], 1.3, '#d7fffa');
+      }
+      ctx.restore();
+      return;
+    }
     if (state.observation === 'sample') {
       const level = clamp((q - 3.5) / 2.5) * .94;
       line([[5, 1.9, 2.5], [5, level, 2.5]], '#a6eff2', 1.8, 6);
@@ -588,11 +639,13 @@ function createHomeScene(canvas) {
     setCamera();
     terrain();
     if (cue.textContent !== state.cue) cue.textContent = state.cue;
-    houses.forEach(([x, z, w, d]) => polygon([[x - w / 2, .02, z - d / 2], [x + w / 2 + 2, .02, z - d / 2 - 2],
+    if (!qualityOnly) houses.forEach(([x, z, w, d]) => polygon([[x - w / 2, .02, z - d / 2], [x + w / 2 + 2, .02, z - d / 2 - 2],
       [x + w / 2 + 2, .02, z + d / 2], [x - w / 2, .02, z + d / 2 + 1]], '#061e2438', null));
     faces = [];
-    houses.forEach(([x, z, w, d, h], index) => house(x, z, w, d, h, index));
-    trees.forEach(([x, z], index) => tree(x, z, index));
+    if (!qualityOnly) {
+      houses.forEach(([x, z, w, d, h], index) => house(x, z, w, d, h, index));
+      trees.forEach(([x, z], index) => tree(x, z, index));
+    }
     addInfrastructure();
     let vehiclePoint;
     if (state.delivery > .02) {
@@ -610,13 +663,15 @@ function createHomeScene(canvas) {
       else polygon(item.points, item.color);
     });
     ctx.globalAlpha = 1;
-    drawCapture();
+    if (!qualityOnly) drawCapture();
     drawHouseholdUse();
     drawDelivery(vehiclePoint);
     drawObservation();
-    if (chapter === 0) label('Persediaan menipis', [2, 3.6, .2], 36, -30);
-    if (chapter === 1) label('Air mengikuti kemiringan atap', [-3, 4.4, 0], -40, -28);
-    if (chapter === 2) label('Kapasitas dan pemakaian rumah', [2, state.tankHeight + .3, .2], 36, -30);
+    if (!qualityOnly) {
+      if (chapter === 0) label('Persediaan menipis', [2, 3.6, .2], 36, -30);
+      if (chapter === 1) label('Air mengikuti kemiringan atap', [-3, 4.4, 0], -40, -28);
+      if (chapter === 2) label('Kapasitas dan pemakaian rumah', [2, state.tankHeight + .3, .2], 36, -30);
+    }
   }
 
   function resize() {

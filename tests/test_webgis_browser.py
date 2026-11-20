@@ -635,34 +635,30 @@ def check_app(page, url, screenshots, device):
     assert page.evaluate("!st.siteLayer && st.mdmcLayer.getLayers().length === 1")
 
     tab(page, "quality")
-    expect(page.locator('.quality-stage')).to_have_count(5)
+    expect(page.locator('.quality-stage')).to_have_count(6)
+    expect(page.locator('#quality-story-canvas')).to_be_visible()
+    expect(page.locator('#quality-start-tour')).to_have_count(0)
     assert page.locator(".quality-stage-label").all_text_contents() == [
         "Tandon", "Bau", "Warna", "Kekeruhan", "Tujuan penggunaan"
     ]
     for stage in page.locator(".quality-stage").all():
         expect(stage).to_be_visible()
-        expect(stage.locator(".quality-scene-art")).to_be_visible()
-        for photo in stage.locator("img").all():
-            stage.scroll_into_view_if_needed()
-            assert photo.evaluate("img => img.decode().then(() => img.naturalWidth > 0)")
         assert stage.evaluate("""section => {
             const rect = section.getBoundingClientRect();
             return rect.left === 0 && Math.abs(rect.width - document.documentElement.clientWidth) < 1;
         }""")
     expect(page.locator("#use")).to_be_visible()
     expect(page.locator("#lab-status")).to_be_hidden()
-    review = page.locator("#quality-purpose").get_by_role("region", name="Tinjau temuan Anda")
+    review = page.get_by_role("region", name="Tinjau temuan Anda")
     recommend = review.get_by_role("button", name="Lihat rekomendasi")
     review_odor = review.locator('[data-review-item][value="odor"]')
     review_color = review.locator('[data-review-item][value="color"]')
     review_chemical = review.locator('[data-review-item][value="chem"]')
     expect(review.locator('input:checked')).to_have_count(0)
-    for stage_id, filled_count in (("purpose", 4), ("odor", 1)):
+    for stage_id in ("purpose", "odor"):
         active_stage = page.locator(f"#quality-{stage_id}")
-        active_stage.evaluate("stage => scrollTo(0, scrollY + stage.getBoundingClientRect().top - innerHeight * .25)")
-        expect(active_stage).to_have_attribute("data-water", "flowing")
-        expect(page.locator('.quality-stage[data-water="filled"]')).to_have_count(filled_count)
-    expect(page.locator("#quality-purpose .quality-pour")).to_have_css("visibility", "hidden")
+        active_stage.evaluate("stage => stage.scrollIntoView({block: 'start', behavior: 'instant'})")
+        expect(page.locator('#quality-form')).to_have_attribute("data-story", stage_id)
     if screenshots:
         page.evaluate("window.scrollTo(0, 0)")
         page.screenshot(path=screenshots / f"quality-page-{device}.png", full_page=True)

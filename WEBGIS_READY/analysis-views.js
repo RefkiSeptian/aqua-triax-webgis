@@ -711,137 +711,6 @@ function yasBenchmarkComparison(params, result) {
       fields.map(([label, key, unit]) => [label, fmt(result[key], 2) + unit, fmt(row[key], 2) + unit]))}</div>`, true);
 }
 
-function qualitySceneArt(id) {
-  const asset = 'assets/quality-guide/';
-  const cutout = {
-    tank: `<img class="quality-tank-photo" src="${asset}tank-cutout.webp" alt="Tandon air hitam dengan keran kuningan di bagian bawah" />`,
-    odor: `<img class="quality-odor-photo" src="${asset}odor-cutout.webp" alt="Seorang perempuan menyadari bau dari ember air yang ia pegang" loading="lazy" />`,
-    color: `<div class="quality-photo-samples" role="group" aria-label="Contoh warna air">
-      <figure class="quality-sample-clear"><div class="quality-sample-frame"><img src="${asset}water-samples-photo.webp" alt="" loading="lazy" /></div><figcaption>Bening</figcaption></figure>
-      <figure class="quality-sample-yellow"><div class="quality-sample-frame"><img src="${asset}water-samples-photo.webp" alt="" loading="lazy" /></div><figcaption>Kekuningan</figcaption></figure>
-      <figure class="quality-sample-brown"><div class="quality-sample-frame"><img src="${asset}brown-water-photo.webp" alt="" loading="lazy" /></div><figcaption>Kecokelatan</figcaption></figure>
-    </div>`,
-    turbid: `<svg class="quality-scene-icon" viewBox="0 0 240 210" aria-hidden="true">
-      <circle class="quality-icon-halo" cx="119" cy="107" r="83" />
-      <path class="quality-icon-fill" d="M65 82c12 7 24 3 38-1 12-4 27-3 38 2l-8 86H73Z" />
-      <path d="M61 66h84l-10 107H71Z" />
-      <circle class="quality-icon-cap" cx="156" cy="112" r="24" />
-      <path d="m173 130 24 24m-52-40h1m12 9h1m5-16h1" />
-      <path class="quality-icon-detail" d="M86 108h1m22 20h1m-28 20h1m25 8h1m10-48h1M37 116h14m-7-7v14m155-56h16m-8-8v16" />
-    </svg>`,
-    purpose: `<svg class="quality-scene-icon" viewBox="0 0 240 210" aria-hidden="true">
-      <circle class="quality-icon-halo" cx="128" cy="111" r="82" />
-      <path class="quality-icon-fill" d="M137 32h12v30h14c15 0 25 10 25 24v10h-14v-10c0-7-5-10-11-10h-35c-6 0-10-4-10-10v-4h19Z" />
-      <path class="quality-icon-port" d="M135 32h16" />
-      <path d="M128 51h30m-15 0v11m30 35h16" />
-      <path class="quality-icon-detail" d="M43 91h18m-9-9v18" />
-      <path class="quality-tap-water" d="M143 32v37h20c11 0 18 7 18 17v10" fill="none" />
-    </svg>
-    <img class="quality-glass-photo" src="${asset}glass-cutout.webp" alt="Gelas bening berisi air" loading="lazy" />
-    <img class="quality-dipper-photo" src="${asset}dipper-cutout.webp" alt="Gayung mandi plastik hijau" loading="lazy" />
-    <svg class="quality-pour" aria-hidden="true">
-      <path class="quality-pour-stream" />
-      <path class="quality-pour-sparkle" />
-      <g class="quality-pour-impact">
-        <ellipse class="quality-pour-ripple" rx="9" ry="2.5" />
-        <ellipse class="quality-pour-ripple quality-pour-ripple-outer" rx="16" ry="4" />
-        <g class="quality-pour-splash">
-          <circle cx="-13" cy="-3" r="1.3" />
-          <circle cx="-9" cy="-5" r="1.7" />
-          <circle cx="-6" cy="-2" r="1.2" />
-          <circle cx="-3" cy="-7" r="1.4" />
-          <circle cx="3" cy="-4" r="1.8" />
-          <circle cx="6" cy="-8" r="1.2" />
-          <circle cx="9" cy="-3" r="1.5" />
-          <circle cx="14" cy="-5" r="1.2" />
-        </g>
-      </g>
-    </svg>`
-  };
-  return `<div class="quality-scene-art">${cutout[id]}</div>`;
-}
-
-let stopQualityPipeFlow = () => {};
-
-function startQualityPipeFlow(form) {
-  const stages = Array.from(form.querySelectorAll('.quality-stage'));
-  const purpose = stages.at(-1);
-  const purposeScene = purpose.querySelector('.quality-purpose-scene');
-  const art = purposeScene.querySelector('.quality-scene-art');
-  const tap = art.querySelector('.quality-scene-icon');
-  const dipper = art.querySelector('.quality-dipper-photo');
-  const streams = art.querySelectorAll('.quality-pour path');
-  const impact = art.querySelector('.quality-pour-impact');
-  const pipePaths = form.querySelectorAll('.quality-pipe-water');
-  const listeners = new AbortController();
-  let frame = 0;
-
-  function updateFlow() {
-    frame = 0;
-    const readingLine = window.innerHeight * 0.52;
-    const current = Math.max(0, stages.findLastIndex(stage => stage.getBoundingClientRect().top <= readingLine));
-    const guideInView = purposeScene.getBoundingClientRect().bottom > readingLine;
-    stages.forEach((stage, index) => {
-      const state = index === current && guideInView ? 'flowing' : index <= current ? 'filled' : 'empty';
-      if (stage.dataset.water === state) return;
-      stage.classList.toggle('quality-water-entering', state === 'flowing' && stage.dataset.water !== 'filled');
-      stage.dataset.water = state;
-    });
-  }
-
-  function scheduleFlow() {
-    if (!frame) frame = requestAnimationFrame(updateFlow);
-  }
-
-  function positionPour() {
-    const scene = art.getBoundingClientRect();
-    const tapBox = tap.getBoundingClientRect();
-    const bowl = dipper.getBoundingClientRect();
-    if (!scene.width || !bowl.height) return;
-    const x = tapBox.left - scene.left + tapBox.width * 181 / 240;
-    const fromY = tapBox.top - scene.top + tapBox.height * 96 / 210;
-    const toY = Math.max(fromY + 4, bowl.top - scene.top + bowl.height * 0.24);
-    streams.forEach(stream => stream.setAttribute('d', `M ${x} ${fromY} V ${toY}`));
-    impact.setAttribute('transform', `translate(${x} ${toY})`);
-    scheduleFlow();
-  }
-
-  function measurePipes() {
-    // Non-scaling strokes take dash lengths in screen pixels, while the SVG reports its path in viewBox units.
-    for (const pipe of pipePaths) {
-      const matrix = pipe.getScreenCTM();
-      if (!matrix || !pipe.ownerSVGElement.getBoundingClientRect().width) continue;
-      const length = pipe.getTotalLength();
-      const intervals = 96;
-      let pixels = 0;
-      let last = pipe.getPointAtLength(0);
-      for (let index = 1; index <= intervals; index += 1) {
-        const point = pipe.getPointAtLength(length * index / intervals);
-        const x = point.x - last.x;
-        const y = point.y - last.y;
-        pixels += Math.hypot(matrix.a * x + matrix.c * y, matrix.b * x + matrix.d * y);
-        last = point;
-      }
-      pipe.ownerSVGElement.style.setProperty('--pipe-length', `${Math.ceil(pixels) + 2}px`);
-    }
-    positionPour();
-  }
-
-  const resize = new ResizeObserver(measurePipes);
-  resize.observe(art);
-  resize.observe(dipper);
-  for (const pipe of pipePaths) resize.observe(pipe.ownerSVGElement);
-  window.addEventListener('scroll', scheduleFlow, {passive: true, signal: listeners.signal});
-  window.addEventListener('resize', measurePipes, {signal: listeners.signal});
-  scheduleFlow();
-  stopQualityPipeFlow = () => {
-    listeners.abort();
-    resize.disconnect();
-    cancelAnimationFrame(frame);
-    stopQualityPipeFlow = () => {};
-  };
-}
-
 function quality() {
   const uses = {DRINKING: 'Minum', COOKING: 'Memasak', NONPOTABLE_DOMESTIC: 'Mandi, mencuci, atau bersih-bersih', OTHER: 'Keperluan lain'};
   const riskLabels = {
@@ -890,8 +759,6 @@ function quality() {
       id: 'tank', label: 'Tandon', question: 'Ada masalah pada tandon?',
       intro: 'Dari luar, periksa tutup tandon, retakan, dan apakah air banjir atau air kotor pernah masuk.',
       yes: 'Ada masalah pada tandon',
-      pipe: 'M72 85.5 V100',
-      mobilePipe: 'M59 85.5 V86 Q59 91 65 91 H92 Q96 91 96 96 V100',
       action: 'Gunakan sumber air yang sudah dipastikan layak untuk minum dan memasak. Jika air banjir atau air kotor masuk, hentikan penggunaan air tandon sampai diperiksa.',
       detail: 'Catat apa yang Anda temukan. Tutup tandon jika bisa dilakukan dengan aman dan minta bantuan petugas untuk memeriksa, membersihkan, atau menilai kembali tandon yang tercemar.',
       source: 'https://www.cdc.gov/water-emergency/communication-resources/fact-sheet-cleaning-and-disinfecting-water-cisterns-after-floods-and-heavy-rains-1.html',
@@ -901,8 +768,6 @@ function quality() {
       id: 'odor', label: 'Bau', question: 'Ada bau yang tidak biasa?',
       intro: 'Perhatikan apakah bau tercium saat membuka keran seperti biasa. Hindari mendekatkan wajah atau mencicipi air.',
       yes: 'Ada bau',
-      pipe: 'M72 0 V5 Q72 9 67 9 H17 Q10 9 10 16 V75 Q10 82 17 82 H24 Q30 82 30 89 V100',
-      mobilePipe: 'M96 0 V4 Q96 10 91 10 H9 Q4 10 4 16 V100',
       action: 'Gunakan sumber air yang sudah dipastikan layak untuk minum dan memasak. Jika tercium bau bensin, pelarut, atau bahan kimia, hentikan semua penggunaan air tandon dan hubungi puskesmas.',
       detail: 'Catat jenis bau dan kapan mulai tercium. Sampaikan jika ada kemungkinan bahan kimia masuk. Merebus atau memberi disinfektan tidak dapat membuat air yang tercemar bahan kimia berbahaya menjadi layak digunakan.',
       source: 'https://www.cdc.gov/water-emergency/about/',
@@ -912,8 +777,6 @@ function quality() {
       id: 'color', label: 'Warna', question: 'Apakah air tampak berwarna?',
       intro: 'Jika tidak ada dugaan bahan kimia, lihat air dari keran di gelas bening dengan latar putih. Perhatikan warna kuning, cokelat seperti karat, atau warna lain.',
       yes: 'Air tampak berwarna',
-      pipe: 'M30 0 V5 Q30 10 36 10 H86 Q92 10 92 17 V68 Q92 74 93 77 Q94 80 94 85 V100',
-      mobilePipe: 'M4 0 V5 Q4 11 9 11 H91 Q96 11 96 17 V100',
       action: 'Gunakan sumber air yang sudah dipastikan layak untuk minum dan memasak sambil mencari tahu penyebab perubahan warna.',
       detail: 'Catat warnanya dan apakah perubahan muncul di satu keran atau beberapa keran. Warna kuning atau cokelat bisa terkait endapan atau pipa. Minta petugas puskesmas membantu menentukan pemeriksaan yang sesuai.',
       source: 'https://www.portland.gov/water/drinking-water-quality/troubleshooting-drinking-water-quality-home/discolored-water',
@@ -923,8 +786,6 @@ function quality() {
       id: 'turbid', label: 'Kekeruhan', question: 'Air keruh atau ada partikel?',
       intro: 'Lihat apakah air tampak berkabut atau ada butiran, serpihan, atau endapan di dasar gelas.',
       yes: 'Keruh atau ada partikel',
-      pipe: 'M94 0 V4 Q94 10 88 10 H16 Q10 10 10 17 V72 Q10 80 17 80 H26 Q32 80 32 88 V100',
-      mobilePipe: 'M96 0 V4 Q96 10 91 10 H9 Q4 10 4 16 V100',
       action: 'Gunakan sumber air yang sudah dipastikan layak untuk minum dan memasak sampai kondisi air diperiksa.',
       detail: 'Catat apa yang terlihat dan kapan mulai muncul, misalnya setelah hujan. Sampaikan temuan ke petugas puskesmas agar bisa menilai sumber air, kondisi tandon, dan kebutuhan pengujian.',
       source: 'https://www.cdc.gov/drinking-water/about/collecting-rainwater-and-your-health-an-overview.html',
@@ -936,14 +797,6 @@ function quality() {
   const checkItem = key => checkbox(key, sanitary[key][0], previous.checked.includes(key), 'data-sanitary');
   const reviewItem = key => checkbox(key, sanitary[key][0], previous.checked.includes(key), 'data-review-item');
   const options = choices => Object.entries(choices).map(([key, label]) => `<option value="${key}">${esc(label)}</option>`).join('');
-  const pipeMarkup = (route, mobile = false) => `<svg class="quality-pipe${mobile ? ' quality-pipe-mobile' : ''}" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-    <path class="quality-pipe-outline" d="${route}" vector-effect="non-scaling-stroke" />
-    <path class="quality-pipe-body" d="${route}" vector-effect="non-scaling-stroke" />
-    <path class="quality-pipe-glint" d="${route}" vector-effect="non-scaling-stroke" />
-    <path class="quality-pipe-water" d="${route}" vector-effect="non-scaling-stroke" />
-    <path class="quality-pipe-bubbles" d="${route}" vector-effect="non-scaling-stroke" />
-    <path class="quality-pipe-foam" d="${route}" vector-effect="non-scaling-stroke" />
-  </svg>`;
   const issueButton = issue => `<button type="button" class="section-link quality-issue" data-issue="${issue.id}" aria-haspopup="dialog" aria-controls="quality-action-${issue.id}" aria-expanded="false">${issue.yes}</button>`;
   const issueDialog = issue => `
     <dialog class="quality-action" id="quality-action-${issue.id}" aria-labelledby="quality-action-title-${issue.id}">
@@ -976,13 +829,9 @@ function quality() {
       </fieldset>
     </div>`;
   const stageMarkup = (stage, index) => `
-    <section class="quality-stage" id="quality-${stage.id}" aria-labelledby="quality-heading-${stage.id}">
-      ${qualitySceneArt(stage.id)}
-      ${pipeMarkup(stage.pipe)}
-      ${pipeMarkup(stage.mobilePipe, true)}
-      <span class="quality-pipe-stem" aria-hidden="true"><span class="quality-pipe-stem-foam"></span></span>
+    <section class="quality-stage" id="quality-${stage.id}" data-quality-story="${stage.id}" aria-labelledby="quality-heading-${stage.id}">
       <div class="quality-stage-copy">
-        ${index === 0 ? '<h1>Cek Kondisi Air Tandon</h1><p>Gulir ke bawah untuk mengikuti aliran air. Jika menemukan masalah, pilih tombol pada tahap itu.</p>' : ''}
+        ${index === 0 ? '<h1>Cek Kondisi Air Tandon</h1><p>Gulir untuk mengikuti perjalanan air. Jika menemukan masalah, pilih tombol pada bagian tersebut.</p>' : ''}
         <p class="quality-stage-label">${stage.label}</p>
         <h2 id="quality-heading-${stage.id}">${stage.question}</h2>
         <p>${stage.intro}</p>
@@ -992,14 +841,17 @@ function quality() {
       ${issueDialog(stage)}
       ${stage.id === 'tank' ? issueDialog(chemistry) : ''}
     </section>`;
-  controls.innerHTML = `<form id="quality-form">
+  const chapters = [...stages.map(({id, label}) => [id, label]), ['purpose', 'Penggunaan'], ['review', 'Temuan']];
+  controls.innerHTML = `<form id="quality-form" class="quality-story" data-story="tank">
+    <div class="home-story-stage quality-story-visual" aria-hidden="true">
+      <canvas id="quality-story-canvas"></canvas>
+      <div class="home-scene-shade"></div>
+      <div class="home-scene-cue"><strong></strong><span>Ilustrasi proses · bukan hasil pemeriksaan</span></div>
+    </div>
     <div class="quality-trail">
       ${stages.map(stageMarkup).join('')}
-      <section class="quality-stage quality-purpose" id="quality-purpose" aria-labelledby="quality-heading-purpose">
+      <section class="quality-stage quality-purpose" id="quality-purpose" data-quality-story="purpose" aria-labelledby="quality-heading-purpose">
         <div class="quality-purpose-scene">
-          ${qualitySceneArt('purpose')}
-          ${pipeMarkup('M32 0 V4 Q32 10 38 10 H62 Q68.3 10 68.3 17 V23.6')}
-          ${pipeMarkup('M4 0 V6 Q4 12 10 12 H55 Q61 12 61 19 V23.6', true)}
           <div class="quality-stage-copy">
             <p class="quality-stage-label">Tujuan penggunaan</p>
             <h2 id="quality-heading-purpose">Untuk apa air akan dipakai?</h2>
@@ -1029,7 +881,8 @@ function quality() {
             </details>
           </div>
         </div>
-        <section class="quality-review" id="quality-review" aria-label="Tinjau temuan Anda">
+      </section>
+        <section class="quality-stage quality-review" id="quality-review" data-quality-story="review" aria-label="Tinjau temuan Anda">
           <div class="quality-review-groups">
             <fieldset class="checklist">
               <legend class="ctrl-label">Kondisi air dan tandon</legend>
@@ -1047,8 +900,10 @@ function quality() {
           </div>
           <button class="primary quality-submit" type="submit">Lihat rekomendasi</button>
         </section>
-      </section>
     </div>
+    <nav class="story-chapters quality-chapters" aria-label="Urutan pemeriksaan air">
+      ${chapters.map(([id, label], index) => `<a href="#quality-${id}"><span>${label}</span><span class="story-chapter-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span></a>`).join('')}
+    </nav>
   </form>`;
   $('#use').value = previous.use;
   $('#quality-demand').value = previous.scenario;
@@ -1069,7 +924,7 @@ function quality() {
     roofReview.hidden = roofReview.disabled = inactive;
   }
   syncRoofChecks();
-  startQualityPipeFlow(form);
+  startQualityStory(form);
   const narrowGuide = window.matchMedia('(max-width: 760px)');
   const moveTo = element => {
     element.focus({preventScroll: true});
