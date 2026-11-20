@@ -15,19 +15,26 @@ class QuietHandler(SimpleHTTPRequestHandler):
 
 def check_sidebar(page, screenshots, name):
     panel = page.locator('#dashboard-sidebar')
+    content = page.locator('#dashboard-sidebar-content')
     toggle = page.locator('#dashboard-toggle-sidebar')
-    if panel.is_visible():
-        page.get_by_role('button', name='Tutup ringkasan wilayah', exact=True).click()
-    expect(panel).to_be_hidden()
+    expect(panel.locator('#dashboard-toggle-sidebar')).to_have_count(1)
+    expect(page.locator('.dashboard-sidebar-toolbar')).to_have_count(0)
+    expect(page.locator('.rwh-map-actions #dashboard-start-tour')).to_have_count(1)
+    if content.is_visible():
+        toggle.click()
+    expect(content).to_be_hidden()
+    expect(panel).to_be_visible()
     expect(toggle).to_have_attribute('aria-expanded', 'false')
-    page.wait_for_timeout(150)
+    page.wait_for_timeout(350)
+    assert abs(panel.bounding_box()['width'] - 52) < 1, 'Collapsed sidebar must remain as a narrow rail'
+    expect(toggle).to_be_in_viewport(ratio=1)
     wide = page.locator('#map').bounding_box()['width']
     view = page.evaluate('({center: st.map.getCenter(), zoom: st.map.getZoom()})')
     toggle.click()
-    expect(panel).to_be_visible()
+    expect(content).to_be_visible()
     expect(page.locator('#dashboard-summary-title')).to_be_focused()
     expect(toggle).to_have_attribute('aria-expanded', 'true')
-    page.wait_for_timeout(150)
+    page.wait_for_timeout(350)
     narrow = page.locator('#map').bounding_box()['width']
     if name == 'mobile':
         assert narrow == wide
@@ -37,10 +44,11 @@ def check_sidebar(page, screenshots, name):
     page.locator('#climate-series').select_option('annual')
     if screenshots:
         page.screenshot(path=str(screenshots / f'sidebar-{name}-open.png'))
-    page.get_by_role('button', name='Tutup ringkasan wilayah', exact=True).click()
-    expect(panel).to_be_hidden()
+    toggle.click()
+    expect(content).to_be_hidden()
+    expect(panel).to_be_visible()
     expect(toggle).to_be_focused()
-    page.wait_for_timeout(150)
+    page.wait_for_timeout(350)
     assert page.evaluate('''view => st.map.getZoom() === view.zoom &&
         st.map.distance(st.map.getCenter(), view.center) < 30 &&
         Math.abs(st.map.getSize().x - document.querySelector('#map').clientWidth) <= 1''', view)
@@ -49,10 +57,11 @@ def check_sidebar(page, screenshots, name):
     toggle.click()
     expect(page.locator('#climate-series')).to_have_value('annual')
     page.locator('#dashboard-summary-title').press('Escape')
-    expect(panel).to_be_hidden()
+    expect(content).to_be_hidden()
     page.locator('.main-tabs [data-tab="about"]').click()
     page.locator('.main-tabs [data-tab="dashboard"]').click()
-    expect(panel).to_be_hidden()
+    expect(content).to_be_hidden()
+    expect(toggle).to_be_visible()
     assert page.evaluate('document.documentElement.scrollWidth === innerWidth')
     print(f'PASS sidebar {name}: collapse, reopen, chart value, map resize/center, Escape, navigation', flush=True)
 

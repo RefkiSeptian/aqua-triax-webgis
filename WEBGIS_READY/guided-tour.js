@@ -73,10 +73,9 @@ const guidedTour = (() => {
     root.id = 'guided-tour';
     root.hidden = true;
     root.innerHTML = `
-      <div class="tour-shade" data-side="top"></div>
-      <div class="tour-shade" data-side="right"></div>
-      <div class="tour-shade" data-side="bottom"></div>
-      <div class="tour-shade" data-side="left"></div>
+      <svg class="tour-overlay" aria-hidden="true" focusable="false">
+        <path class="tour-shade" fill-rule="evenodd"></path>
+      </svg>
       <div class="tour-spotlight" aria-hidden="true"></div>
       <section class="tour-card" role="dialog" aria-modal="false" aria-labelledby="tour-title" aria-describedby="tour-description">
         <div class="tour-progress" role="progressbar" aria-label="Kemajuan tur" aria-valuemin="1" aria-valuemax="${steps.length}"><span></span></div>
@@ -158,15 +157,18 @@ const guidedTour = (() => {
       bottom: Math.max(0, Math.min(height, bounds.bottom + 8))
     } : {left: 0, top: 0, right: 0, bottom: 0};
     const hasTarget = bounds && box.right > box.left && box.bottom > box.top;
-    const rectangles = hasTarget ? {
-      top: [0, 0, width, box.top],
-      right: [box.right, box.top, width - box.right, box.bottom - box.top],
-      bottom: [0, box.bottom, width, height - box.bottom],
-      left: [0, box.top, box.left, box.bottom - box.top]
-    } : {top: [0, 0, width, height], right: [0, 0, 0, 0], bottom: [0, 0, 0, 0], left: [0, 0, 0, 0]};
-    for (const [side, [left, top, w, h]] of Object.entries(rectangles)) {
-      Object.assign(root.querySelector(`[data-side="${side}"]`).style, {left: `${left}px`, top: `${top}px`, width: `${w}px`, height: `${h}px`});
+    // Paint one continuous shade: adjoining translucent rectangles can leave
+    // hairline seams when their edges fall between physical screen pixels.
+    let shade = `M0 0H${width}V${height}H0Z`;
+    if (hasTarget) {
+      const {left, top, right, bottom} = box;
+      const radius = Math.min(14, (right - left) / 2, (bottom - top) / 2);
+      shade += `M${left + radius} ${top}H${right - radius}Q${right} ${top} ${right} ${top + radius}` +
+        `V${bottom - radius}Q${right} ${bottom} ${right - radius} ${bottom}` +
+        `H${left + radius}Q${left} ${bottom} ${left} ${bottom - radius}` +
+        `V${top + radius}Q${left} ${top} ${left + radius} ${top}Z`;
     }
+    root.querySelector('.tour-shade').setAttribute('d', shade);
     const spotlight = root.querySelector('.tour-spotlight');
     spotlight.hidden = !hasTarget;
     Object.assign(spotlight.style, {left: `${box.left}px`, top: `${box.top}px`, width: `${box.right - box.left}px`, height: `${box.bottom - box.top}px`});

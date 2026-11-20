@@ -157,21 +157,14 @@
     </main>
     <p id="load-status" class="notice project-load-status" role="status">Memuat data penelitian…</p>
     <div id="dashboard-map-layout" class="dashboard-map-layout" hidden>
-      <div class="dashboard-sidebar-toolbar">
-        <button id="dashboard-toggle-sidebar" class="dashboard-start-tour" type="button" aria-controls="dashboard-sidebar" aria-expanded="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-12-3 4 3 4"/></svg>
-          <span>Ringkasan wilayah</span>
-        </button>
-        <button id="dashboard-start-tour" class="dashboard-start-tour" type="button" disabled>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9Z"/></svg>
-          Mulai tur
-        </button>
-      </div>
       <aside id="dashboard-sidebar" class="dashboard-panel" aria-labelledby="dashboard-summary-title">
         <div class="dashboard-panel-heading">
           <h2 id="dashboard-summary-title" tabindex="-1">Ringkasan Katongan</h2>
-          <button id="dashboard-close-sidebar" type="button" aria-label="Tutup ringkasan wilayah">×</button>
+          <button id="dashboard-toggle-sidebar" type="button" aria-label="Perkecil ringkasan wilayah" title="Perkecil ringkasan wilayah" aria-controls="dashboard-sidebar-content" aria-expanded="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-12-3 4 3 4"/></svg>
+          </button>
         </div>
+        <div id="dashboard-sidebar-content">
         <p id="dashboard-summary-context"></p>
         <div id="dashboard-summary-content"></div>
         <section class="dashboard-data-basis" aria-labelledby="climate-title">
@@ -196,6 +189,7 @@
           <div id="climate-plot" role="region" aria-labelledby="climate-plot-title"></div>
           <p id="climate-note"></p>
         </section>
+        </div>
       </aside>
       <div id="rwh-map-slot" class="rwh-map-slot"></div>
     </div>
@@ -264,6 +258,10 @@
                     <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
                   </svg>
                   <span class="rwh-icon-label" aria-hidden="true">Lokasi saya</span>
+                </button>
+                <button id="dashboard-start-tour" class="rwh-icon-button" type="button" aria-label="Mulai tur" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9Z"/></svg>
+                  <span class="rwh-icon-label" aria-hidden="true">Mulai tur</span>
                 </button>
               </div>
               <section id="rwh-tool-panel" class="rwh-tool-panel" aria-labelledby="rwh-tool-title" hidden>

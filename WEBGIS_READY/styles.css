@@ -443,23 +443,36 @@
 .climate-month-chart + .plot-reading{margin-top:8px}
 .rwh-map-slot{padding:0 clamp(10px,2vw,28px)}
 .dashboard-map-layout{
+  --dashboard-sidebar-width:clamp(254px,23vw,302px);
+  --dashboard-map-height:clamp(330px,calc(100svh - 135px),720px);
   position:relative;isolation:isolate;
-  display:grid;grid-template-columns:clamp(254px,23vw,302px) minmax(0,1fr);
+  display:grid;grid-template-columns:var(--dashboard-sidebar-width) minmax(0,1fr);
   gap:12px;align-items:start;padding:0 clamp(10px,2vw,28px) 18px;
 }
-.dashboard-map-layout .rwh-map-slot{padding:0;min-width:0}
-.dashboard-map-layout[data-sidebar="closed"]{grid-template-columns:minmax(0,1fr)}
-.dashboard-sidebar-toolbar{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.dashboard-sidebar-toolbar .dashboard-start-tour{margin:0;min-height:44px}
-.dashboard-sidebar-toolbar [aria-expanded="false"] svg path{transform:translateX(27px) scaleX(-1)}
-.dashboard-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.dashboard-map-layout .rwh-map-slot{grid-column:2;grid-row:1;padding:0;min-width:0}
+.dashboard-map-layout[data-sidebar="closed"]{grid-template-columns:52px minmax(0,1fr)}
+.dashboard-panel-heading{flex:none;display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:3px;border-bottom:1px solid #bdd8ca66}
+.dashboard-panel-heading h2{flex:1;min-width:0;padding-left:12px;white-space:nowrap;overflow:hidden}
 .dashboard-panel-heading button{
-  flex:none;display:grid;place-items:center;width:40px;height:40px;padding:0;
-  border:1px solid #a8c9b9;border-radius:50%;background:var(--button-glass-light);
-  color:#245c4d;font-size:24px;
+  flex:none;display:grid;place-items:center;width:44px;height:44px;padding:0;
+  border:0;border-radius:12px;background:transparent;color:#245c4d;
 }
 .dashboard-panel-heading button:hover{background:#e0efe5}
-#dashboard-sidebar{max-height:calc(100svh - 190px);overflow-y:auto;overscroll-behavior:contain}
+.dashboard-panel-heading svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#dashboard-toggle-sidebar[aria-expanded="false"] svg path{transform:translateX(27px) scaleX(-1)}
+#dashboard-sidebar{
+  display:flex;flex-direction:column;grid-column:1;grid-row:1;height:var(--dashboard-map-height);
+  min-width:0;padding:0;overflow:hidden;
+}
+#dashboard-sidebar-content{
+  flex:1;min-height:0;width:calc(var(--dashboard-sidebar-width) - 2px);padding:0 15px 15px;
+  overflow-y:auto;overscroll-behavior:contain;
+}
+.dashboard-map-layout[data-sidebar="closed"] .dashboard-panel-heading{gap:0;border-bottom-color:transparent}
+@media(prefers-reduced-motion:no-preference){
+  .dashboard-map-layout{transition:grid-template-columns 280ms cubic-bezier(.22,1,.36,1)}
+  #dashboard-sidebar{transition:width 280ms cubic-bezier(.22,1,.36,1)}
+}
 .dashboard-panel{
   min-width:0;padding:15px;border:1px solid var(--glass-border);
   box-shadow:0 14px 30px -14px #123c3159,var(--glass-edge);
@@ -492,13 +505,17 @@
 .dashboard-panel .section-link{margin:12px 0 0}
 #dashboard-distribution-title{scroll-margin-top:100px}
 @media(max-width:760px){
-  .dashboard-map-layout{grid-template-columns:minmax(0,1fr);padding-inline:6px}
-  .dashboard-map-layout .rwh-map-slot{grid-row:2}
+  .dashboard-map-layout,.dashboard-map-layout[data-sidebar="closed"]{
+    --dashboard-sidebar-width:min(360px,calc(100vw - 12px));
+    --dashboard-map-height:clamp(330px,calc(100svh - 155px),720px);
+    grid-template-columns:52px minmax(0,1fr);gap:8px;padding-inline:6px;
+  }
   #dashboard-sidebar{
-    position:absolute;left:6px;top:56px;z-index:1100;width:min(360px,calc(100% - 12px));
-    max-height:calc(100svh - 210px);background:var(--glass-fallback);
+    position:absolute;left:6px;top:0;z-index:1100;width:var(--dashboard-sidebar-width);
+    background:var(--glass-fallback);
     box-shadow:var(--glass-float-shadow),var(--glass-edge);
   }
+  .dashboard-map-layout[data-sidebar="closed"] #dashboard-sidebar{width:52px}
 }
 .rwh-map-slot:empty{display:none}
 .rwh-map-slot .map-hdr{display:none}
@@ -506,7 +523,7 @@
   height:clamp(330px,calc(100vh - 125px),720px);
   height:clamp(330px,calc(100svh - 125px),720px);
 }
-.dashboard-map-layout .rwh-map-slot #map{height:clamp(330px,calc(100svh - 180px),720px)}
+.dashboard-map-layout .rwh-map-slot #map{height:var(--dashboard-map-height)}
 .map-stage{position:relative}
 .map-credits:empty{display:none}
 .map-credits .leaflet-control-attribution{
@@ -1228,7 +1245,7 @@
 }
 @media(max-width:760px),(max-height:560px){
   .rwh-map-actions{right:8px;top:8px;padding:4px}
-  .rwh-map-actions .rwh-icon-button{width:40px;height:clamp(32px,calc((100svh - 165px) / 8),44px)}
+  .rwh-map-actions .rwh-icon-button{width:40px;height:clamp(32px,calc((100svh - 195px) / 8),44px)}
   .rwh-tool-panel{right:66px;top:8px;width:min(410px,calc(100% - 74px));max-height:calc(100% - 52px)}
   .rwh-map-tools:has([data-map-tool="measure"][aria-expanded="true"]) .rwh-map-guide{visibility:hidden}
 }
@@ -1310,16 +1327,9 @@
 }
 
 /* User-triggered Dashboard tour. */
-.dashboard-start-tour{
-  display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 13px;
-  min-height:40px;border:1px solid #9cbead;border-radius:999px;
-  background:var(--button-glass-light);color:#174d3b;font-size:14px;font-weight:650;
-  box-shadow:inset 0 1px 0 #fff,0 3px 8px #102e2c12;
-}
-.dashboard-start-tour svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
-.dashboard-start-tour:hover{border-color:#31775e;background:#e2f1e8}
 #guided-tour{position:fixed;inset:0;z-index:6000;pointer-events:none;font-family:var(--body-font)}
-.tour-shade{position:absolute;background:#0a2528a6;pointer-events:auto}
+.tour-overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.tour-shade{fill:#0a2528a6;pointer-events:fill}
 .tour-spotlight{position:absolute;border:2px solid #cfefdf;border-radius:14px;box-shadow:0 0 0 3px #89c8ad66;pointer-events:none}
 .tour-card{
   position:absolute;width:min(390px,calc(100vw - 32px));max-height:calc(100dvh - 32px);

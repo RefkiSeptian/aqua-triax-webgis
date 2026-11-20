@@ -2,12 +2,15 @@
 
 function setDashboardSidebar(open, focus = false) {
   const layout = $('#dashboard-map-layout');
-  const sidebar = $('#dashboard-sidebar');
+  const content = $('#dashboard-sidebar-content');
   const toggle = $('#dashboard-toggle-sidebar');
   layout.dataset.sidebar = open ? 'open' : 'closed';
-  sidebar.hidden = !open;
+  content.hidden = !open;
+  $('#dashboard-summary-title').hidden = !open;
   toggle.setAttribute('aria-expanded', String(open));
-  toggle.setAttribute('aria-label', `${open ? 'Sembunyikan' : 'Buka'} ringkasan wilayah`);
+  const label = `${open ? 'Perkecil' : 'Buka'} ringkasan wilayah`;
+  toggle.setAttribute('aria-label', label);
+  toggle.title = label;
   if (focus) $(open ? '#dashboard-summary-title' : '#dashboard-toggle-sidebar').focus({preventScroll: true});
 }
 
@@ -15,7 +18,6 @@ function bindDashboardSidebar() {
   const layout = $('#dashboard-map-layout');
   setDashboardSidebar(!matchMedia('(max-width:760px)').matches);
   $('#dashboard-toggle-sidebar').onclick = () => setDashboardSidebar(layout.dataset.sidebar !== 'open', true);
-  $('#dashboard-close-sidebar').onclick = () => setDashboardSidebar(false, true);
   $('#dashboard-sidebar').addEventListener('keydown', event => {
     if (event.key !== 'Escape' || event.defaultPrevented) return;
     if (CSS.supports('selector(select:open)') && event.target.closest('select:open')) return;
