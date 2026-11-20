@@ -287,13 +287,13 @@
 .shell:has(> .project-about:not([hidden])){max-width:none}
 .project-about{width:100%;padding-inline:0;padding-bottom:0}
 .team-section{
-  width:min(1160px,100%);margin-inline:auto;
+  width:min(1320px,100%);margin-inline:auto;
   padding-inline:clamp(16px,4vw,54px);text-align:center;
 }
 .team-section h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;letter-spacing:-.045em}
 .team-members{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3.5vw,56px);
-  max-width:980px;margin:clamp(25px,4vw,52px) auto 0;padding:0;list-style:none;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.5vw,36px);
+  max-width:1160px;margin:clamp(25px,4vw,52px) auto 0;padding:0;list-style:none;
 }
 .team-member{min-width:0}
 .team-portrait{
@@ -305,11 +305,13 @@
 .team-portrait-mint{--portrait-light:#c3e7d3;--portrait-color:#65a88e}
 .team-portrait-teal{--portrait-light:#c7e5e2;--portrait-color:#6fa7a6}
 .team-portrait-amber{--portrait-light:#f7e5bb;--portrait-color:#d3aa62}
+.team-portrait-sage{--portrait-light:#d8e4c8;--portrait-color:#879f70}
 .team-photos{position:absolute;inset:auto 0 0;height:94%}
 .team-photos img{
   position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;
   opacity:0;transition:opacity .45s ease;
 }
+.team-photos img:only-child,
 [data-team-photo="1"] .team-photos img:nth-child(1),
 [data-team-photo="2"] .team-photos img:nth-child(2),
 [data-team-photo="3"] .team-photos img:nth-child(3){opacity:1}
@@ -347,6 +349,9 @@
   .about-project::before{
     inset:auto -115px 0 auto;border:48px solid #94cdb97a;
   }
+}
+@media(max-width:1000px){
+  .team-members{grid-template-columns:repeat(2,minmax(0,1fr));max-width:620px;row-gap:36px}
 }
 @media(max-width:600px){
   .team-members{grid-template-columns:1fr;justify-items:center;gap:28px}

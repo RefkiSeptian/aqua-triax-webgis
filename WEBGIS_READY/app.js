@@ -440,15 +440,20 @@ const aboutView = $('#about-view');
 const teamPhotoNext = $('#team-photo-next');
 let teamPhotoTimer;
 
+function teamPhotoCount() {
+  return Math.max(1, ...Array.from(aboutView.querySelectorAll('.team-photos'), photos => photos.children.length));
+}
+
 function nextTeamPhoto() {
-  aboutView.dataset.teamPhoto = Number(aboutView.dataset.teamPhoto) % 3 + 1;
+  aboutView.dataset.teamPhoto = Number(aboutView.dataset.teamPhoto) % teamPhotoCount() + 1;
 }
 
 function syncTeamPhotoRotation() {
   clearInterval(teamPhotoTimer);
   if (aboutView.hidden) return;
-  teamPhotoNext.hidden = !rainMotionPreference.matches;
-  if (!rainMotionPreference.matches && !document.hidden) teamPhotoTimer = setInterval(nextTeamPhoto, 5000);
+  const hasVariants = teamPhotoCount() > 1;
+  teamPhotoNext.hidden = !rainMotionPreference.matches || !hasVariants;
+  if (hasVariants && !rainMotionPreference.matches && !document.hidden) teamPhotoTimer = setInterval(nextTeamPhoto, 5000);
 }
 
 let lightningTimer;
