@@ -28,7 +28,7 @@ function rwhAuditPanel() {
 }
 
 function rwhBuildingStyle(feature) {
-  return {weight: 0.28, color: '#476b5d', fillColor: buildingColor(metricM3(feature)), fillOpacity: 0.82};
+  return {weight: 0.5, color: '#49205e', fillColor: buildingColor(metricM3(feature)), fillOpacity: 0.94};
 }
 
 function pointInRing({lng, lat}, ring) {

@@ -23,22 +23,26 @@
         <img class="brand-logo" src="assets/katongan-logo.svg" width="450" height="235" alt="AQUA TRIAX" />
       </button>
       <nav class="tabs main-tabs" aria-label="Fitur utama">
+        <button class="tab active" data-tab="home" aria-current="page">Beranda</button>
         <button class="tab" data-tab="dashboard">Dashboard</button>
         <button class="tab" data-tab="quality">Cek Kondisi Air</button>
         <button class="tab" data-tab="about">Tentang</button>
       </nav>
     </header>
-    <main id="home-view" class="project-page home-view">
+    <main id="home-view" class="project-page home-view" data-story="intro">
+      <div class="home-story-stage" aria-hidden="true">
+        <canvas id="home-story-canvas"></canvas>
+        <div class="home-scene-shade"></div>
+      </div>
       <section class="home-hero" aria-labelledby="home-title">
-        <figure class="home-photo">
-          <div class="home-photo-frame">
-            <img src="assets/warga-mengambil-air-ngadisan.webp" width="2560" height="1829" alt="Warga Ngadisan mengisi jeriken di pompa air desa" fetchpriority="high" draggable="false">
-          </div>
-          <figcaption>Warga mengambil air di Ngadisan, Jawa Timur, 8 Februari 2015. <a href="https://commons.wikimedia.org/wiki/File:Ngadisan_Indonesia_Village-pump-01.jpg">© CEphoto, Uwe Aranas</a> · <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a> · Diubah ukuran dan dipotong sesuai layar.</figcaption>
-        </figure>
         <div class="home-hero-copy">
-          <h1 id="home-title" tabindex="-1">Kenali sumber air di sekitar Anda</h1>
+          <p class="home-brand-name">AQUA TRIAX</p>
+          <h1 id="home-title" tabindex="-1">Setiap tetes punya<br>perjalanan.</h1>
           <p>AQUA TRIAX membantu Anda memperkirakan tampungan air hujan, melihat riwayat penyaluran bantuan, dan mengetahui langkah awal saat kondisi air berubah.</p>
+          <div class="home-entry-actions">
+            <button type="button" class="primary" data-tab="dashboard">Buka Dashboard <span aria-hidden="true">↗</span></button>
+            <a href="#home-story" data-story-link>Jelajahi ceritanya <span aria-hidden="true">↓</span></a>
+          </div>
           <ul class="home-feature-list">
             <li>Potensi Air Hujan</li>
             <li>Lokasi Bantuan Air</li>
@@ -55,12 +59,46 @@
             </a>
           </div>
         </div>
-        <p class="home-swipe-hint">
+        <a class="home-swipe-hint" href="#home-story" data-story-link>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="m5 14 7-7 7 7M8 19l4-4 4 4" />
+            <path d="m6 8 6 6 6-6M6 14l6 6 6-6" />
           </svg>
-          <span>Geser ke arah mana saja untuk membuka Dashboard</span>
-        </p>
+          <span>Gulir untuk mengikuti perjalanan air</span>
+        </a>
+      </section>
+      <section id="home-story" class="home-story" data-story="harvest" aria-label="Perjalanan air bersama AQUA TRIAX">
+        <div class="home-story-content">
+          <section id="story-harvest" class="home-story-step" data-story-step="harvest" aria-labelledby="story-harvest-title">
+            <div class="story-copy">
+              <p class="story-kicker">Potensi air hujan</p>
+              <h2 id="story-harvest-title">Berawal dari atap.<br>Menjadi persediaan.</h2>
+              <p>Air yang jatuh di atap punya peluang untuk ditampung. Luas atap dan curah hujan membantu memperkirakan berapa banyak yang bisa dikumpulkan.</p>
+              <p class="story-feature">Ketuk bangunan di peta, lalu hitung kebutuhan tandon sesuai jumlah penghuni rumah.</p>
+            </div>
+          </section>
+          <section id="story-distribution" class="home-story-step" data-story-step="distribution" aria-labelledby="story-distribution-title">
+            <div class="story-copy">
+              <p class="story-kicker">Lokasi bantuan air</p>
+              <h2 id="story-distribution-title">Saat air terbatas,<br>lihat jangkauannya.</h2>
+              <p>Riwayat bantuan membantu melihat di mana air pernah disalurkan. Jalan dan zona cakupan memberi konteks untuk memahami akses di sekitarnya.</p>
+              <p class="story-feature">Aktifkan layer bantuan di Dashboard untuk menelusuri lokasi dan melihat simulasi cakupannya.</p>
+            </div>
+          </section>
+          <section id="story-quality" class="home-story-step" data-story-step="quality" aria-labelledby="story-quality-title">
+            <div class="story-copy">
+              <p class="story-kicker">Cek kondisi air</p>
+              <h2 id="story-quality-title">Kenali airnya.<br>Tentukan langkah berikutnya.</h2>
+              <p>Ikuti pemeriksaan dari tandon hingga air yang akan digunakan. Amati bau, warna, dan kejernihan, lalu tinjau temuan Anda.</p>
+              <p class="story-feature">Panduan Cek Kondisi Air membantu mencatat kondisi yang terlihat dan menampilkan rekomendasi pemeriksaan berikutnya.</p>
+              <button type="button" class="primary story-dashboard" data-tab="dashboard">Buka Dashboard <span aria-hidden="true">↗</span></button>
+            </div>
+          </section>
+        </div>
+        <nav class="story-chapters" aria-label="Bagian cerita">
+          <a href="#story-harvest" data-story-link aria-current="step">Air hujan</a>
+          <a href="#story-distribution" data-story-link>Bantuan air</a>
+          <a href="#story-quality" data-story-link>Kondisi air</a>
+        </nav>
       </section>
     </main>
     <main id="about-view" class="project-page project-about" data-team-photo="1" hidden>
@@ -166,28 +204,26 @@
             <div id="map" role="region" aria-label="Peta interaktif Katongan" tabindex="0"></div>
             <div class="rwh-map-tools" id="rwh-map-tools" hidden>
               <div class="rwh-map-guide">
-                <h1>Peta Ketahanan Air</h1>
-                <p>Pilih layer di kanan. Ketuk objek di peta untuk melihat rinciannya.</p>
                 <p id="rwh-location-status" class="rwh-location-status" role="status"></p>
                 <section class="rwh-legend" aria-labelledby="rwh-legend-title">
                   <h2 id="rwh-legend-title">Legenda peta</h2>
                   <div id="rwh-legend-slot"></div>
                 </section>
+                <section id="rainfall-legend" class="rainfall-legend" aria-labelledby="rainfall-legend-title" hidden>
+                  <h2 id="rainfall-legend-title">Curah hujan rata-rata</h2>
+                  <p>CHIRPS v3 · 1996–2025 · mm/tahun</p>
+                  <div class="rainfall-gradient" aria-hidden="true"></div>
+                  <div id="rainfall-legend-values" class="rainfall-legend-values"></div>
+                </section>
               </div>
-              <section id="rainfall-legend" class="rainfall-legend" aria-labelledby="rainfall-legend-title" hidden>
-                <h2 id="rainfall-legend-title">Curah hujan rata-rata tahunan</h2>
-                <p>CHIRPS v3 · 1996–2025 · mm/tahun</p>
-                <div class="rainfall-gradient" aria-hidden="true"></div>
-                <div id="rainfall-legend-values" class="rainfall-legend-values"></div>
-              </section>
               <div class="rwh-map-actions" role="group" aria-label="Alat peta">
                 <button type="button" class="rwh-icon-button" data-map-tool="basemap" aria-label="Peta dasar" aria-controls="rwh-tool-panel" aria-expanded="false" disabled>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15m6-12v15"/></svg>
                   <span class="rwh-icon-label" aria-hidden="true">Peta dasar</span>
                 </button>
-                <button type="button" class="rwh-icon-button" data-map-tool="layers" aria-label="Layer &amp; legenda" aria-controls="rwh-tool-panel" aria-expanded="false" disabled>
+                <button type="button" class="rwh-icon-button" data-map-tool="layers" aria-label="Layer peta" aria-controls="rwh-tool-panel" aria-expanded="false" disabled>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/></svg>
-                  <span class="rwh-icon-label" aria-hidden="true">Layer &amp; legenda</span>
+                  <span class="rwh-icon-label" aria-hidden="true">Layer peta</span>
                 </button>
                 <button type="button" class="rwh-icon-button" data-map-tool="measure" aria-label="Alat ukur" aria-controls="rwh-tool-panel" aria-expanded="false" disabled>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 16 13-13 5 5L8 21zM7 12l2 2m2-6 2 2m2-6 2 2"/></svg>
@@ -215,12 +251,6 @@
                     <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
                   </svg>
                   <span class="rwh-icon-label" aria-hidden="true">Lokasi saya</span>
-                </button>
-                <button type="button" class="rwh-icon-button" id="rwh-reset-map" aria-label="Kembali ke seluruh Katongan" disabled>
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5" />
-                  </svg>
-                  <span class="rwh-icon-label" aria-hidden="true">Kembali ke seluruh Katongan</span>
                 </button>
               </div>
               <section id="rwh-tool-panel" class="rwh-tool-panel" aria-labelledby="rwh-tool-title" hidden>
@@ -265,6 +295,8 @@
   <script src="distribution.js" defer></script>
   <script src="dashboard-panels.js" defer></script>
   <script src="map-tools.js" defer></script>
+  <script src="home-scene.js" defer></script>
+  <script src="home-story.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>

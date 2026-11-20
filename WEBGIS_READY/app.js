@@ -6,9 +6,10 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 
 const st = {
   tab: 'home', rc: 0.8, phase: 11, siteMethod: 'euclidean', showAidLocations: false,
-  showAdministrativeBoundary: false, selectedRegionLevels: 0,
+  showRwhBuildings: true, showRainfall: false,
+  showAdministrativeBoundary: true, selectedRegionLevels: 4,
   buildingPotentialRange: '',
-  showRoads: false, roadTypes: {walk: true, drive: false},
+  showRoads: true, roadTypes: {walk: true, drive: true},
   showDistributionCoverage: false,
   networkLayers: {sites: true, uncovered: true, zones: false, mdmc: true},
   assignmentSite: '', map: null
@@ -39,11 +40,11 @@ function panel(title,body,wide=false){return `<article class="panel ${wide?'wide
 function mini(k,v){return `<div class="mini-row"><span>${esc(k)}</span><strong>${esc(v)}</strong></div>`}
 function metricM3(f){return Number(f.properties['rwh_rc'+Math.round(st.rc*100)+'_m3yr'])||0}
 const buildingPotentialRanges = [
-  {min: 0, max: 30, label: '<30', color: '#d2e7db'},
-  {min: 30, max: 80, label: '30–<80', color: '#88baa0'},
-  {min: 80, max: 150, label: '80–<150', color: '#36896d'},
-  {min: 150, max: 300, label: '150–<300', color: '#17674e'},
-  {min: 300, max: Infinity, label: '≥300', color: '#0c483a'}
+  {min: 0, max: 30, label: '<30', color: '#d0a3e8'},
+  {min: 30, max: 80, label: '30–<80', color: '#b374d5'},
+  {min: 80, max: 150, label: '80–<150', color: '#9145bc'},
+  {min: 150, max: 300, label: '150–<300', color: '#6b2399'},
+  {min: 300, max: Infinity, label: '≥300', color: '#400e65'}
 ];
 function buildingColor(volume) {
   return (buildingPotentialRanges.find(range => volume < range.max) ?? buildingPotentialRanges.at(-1)).color;
@@ -93,8 +94,9 @@ function ensureMap() {
   roads.style.zIndex = 405;
   roads.style.pointerEvents = 'none';
   const boundary = st.map.createPane('administrative-boundary');
-  boundary.style.zIndex = 410;
+  boundary.style.zIndex = 390;
   boundary.style.pointerEvents = 'none';
+  st.map.createPane('rainfall').style.zIndex = 380;
   st.basemaps = {};
   st.map.on('click', event => {
     if (st.rwhMapTool !== 'measure' || rwhMeasurement.finished) return;
@@ -174,7 +176,6 @@ function updateDistributionMap() {
 
 function chooseTab(key) {
   if (key === 'dashboard') key = 'rwh';
-  if (key !== 'home') stopHomeAdvance();
   if (st.tab === 'rwh' && key !== 'rwh') {
     closeRwhMapTool();
     closeRwhBuilding();
@@ -196,8 +197,8 @@ function chooseTab(key) {
   });
   render();
   if (key === 'home') {
+    window.scrollTo(0, 0);
     $('#home-title').focus({preventScroll: true});
-    scheduleHomeAdvance();
   }
   if (key === 'rwh' && st.showAidLocations) {
     loadHistoricAid();
@@ -292,8 +293,7 @@ function updateLegend() {
   if (buildings) {
     const active = activeBuildingRange();
     const ranges = active ? [active] : buildingPotentialRanges;
-    items.push(...ranges.map(({color, label}, index) =>
-      [color, index === 0 ? label + ' m³/tahun' : label]));
+    items.push(...ranges.map(({color, label}) => [color, label + ' m³/tahun']));
   }
   if (dashboard && st.showAidLocations && st.mdmcLayer) items.push([null, 'Lokasi bantuan terdahulu']);
   if (dashboard) {
@@ -331,11 +331,6 @@ function updateLegend() {
   }).join('');
   $('#map-legend').innerHTML = legend;
   $('.rwh-legend').hidden = items.length === 0;
-  const panelLegend = $('#rwh-tool-legend');
-  if (panelLegend) {
-    const rainfall = $('#rainfall-legend').hidden ? '' : '<span>Skala curah hujan ada di kiri bawah peta.</span>';
-    panelLegend.innerHTML = legend + rainfall || '<span>Belum ada layer aktif.</span>';
-  }
   $('#map-caption').textContent = [
     buildings ? 'Potensi atap: Google Open Buildings dan CHIRPS.' : '',
     st.mdmcLayer ? 'Catatan historis MDMC ditampilkan pada koordinat perkiraan.' : '',
@@ -359,6 +354,8 @@ function render() {
   const about = st.tab === 'about';
   $('.masthead').hidden = home;
   $('#home-view').hidden = !home;
+  if (home) homeStory.start();
+  else homeStory.stop();
   aboutView.hidden = !about;
   syncTeamPhotoRotation();
   $('#dashboard-map-layout').hidden = st.tab !== 'rwh';
@@ -566,48 +563,6 @@ function syncRainLightning() {
   }, 8000 + Math.random() * 10000);
 }
 
-const homeView = $('#home-view');
-let homeAdvanceTimer;
-let homeAdvanceRequested = false;
-let homeExitAnimation;
-let homePointer;
-
-function stopHomeAdvance() {
-  clearTimeout(homeAdvanceTimer);
-  homeAdvanceRequested = false;
-  homeExitAnimation?.cancel();
-  homeExitAnimation = undefined;
-  homePointer = undefined;
-}
-
-function scheduleHomeAdvance() {
-  stopHomeAdvance();
-  homeAdvanceTimer = setTimeout(advanceHome, 15000);
-}
-
-async function advanceHome() {
-  if (st.tab !== 'home' || homeExitAnimation) return;
-  clearTimeout(homeAdvanceTimer);
-  if ($('.main-tabs [data-tab="dashboard"]').disabled) {
-    homeAdvanceRequested = true;
-    return;
-  }
-  if (!rainMotionPreference.matches) {
-    homeExitAnimation = homeView.animate([
-      {transform: 'translateY(0)', opacity: 1},
-      {transform: 'translateY(-100%)', opacity: 0}
-    ], {duration: 900, easing: 'cubic-bezier(.3,.7,.25,1)', fill: 'forwards'});
-    try {
-      await homeExitAnimation.finished;
-    } catch {
-      return;
-    }
-  }
-  chooseTab('dashboard');
-  window.scrollTo(0, 0);
-  $('.main-tabs [data-tab="dashboard"]').focus({preventScroll: true});
-}
-
 async function start() {
   const status = $('#load-status');
   if (CSS.supports('selector(select:open)')) {
@@ -618,29 +573,6 @@ async function start() {
       select.scrollIntoView({block: 'center', inline: 'nearest', behavior: 'instant'});
     });
   }
-  homeView.addEventListener('pointerdown', event => {
-    if (!event.isPrimary || event.button !== 0 || event.target.closest('a')) return;
-    homePointer = {id: event.pointerId, x: event.clientX, y: event.clientY};
-  });
-  window.addEventListener('pointerup', event => {
-    if (homePointer?.id !== event.pointerId) return;
-    const distance = Math.hypot(event.clientX - homePointer.x, event.clientY - homePointer.y);
-    homePointer = undefined;
-    if (distance >= 36) advanceHome();
-  });
-  homeView.addEventListener('pointercancel', () => { homePointer = undefined; });
-  window.addEventListener('keydown', event => {
-    if (st.tab !== 'home' || event.defaultPrevented || event.altKey || event.ctrlKey ||
-        event.metaKey || event.shiftKey || event.target.closest?.('a, button')) return;
-    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageDown'].includes(event.key)) return;
-    if (!$('.main-tabs [data-tab="dashboard"]').disabled) event.preventDefault();
-    advanceHome();
-  });
-  homeView.addEventListener('wheel', event => {
-    if (event.ctrlKey || (!event.deltaX && !event.deltaY)) return;
-    if (!$('.main-tabs [data-tab="dashboard"]').disabled) event.preventDefault();
-    advanceHome();
-  }, {passive: false});
   rainMotionPreference.addEventListener('change', syncRain);
   document.addEventListener('visibilitychange', syncRain);
   rainMotionPreference.addEventListener('change', syncRainLightning);
@@ -649,7 +581,6 @@ async function start() {
   rainMotionPreference.addEventListener('change', syncTeamPhotoRotation);
   document.addEventListener('visibilitychange', syncTeamPhotoRotation);
   $('#rwh-locate').onclick = locateRwhUser;
-  $('#rwh-reset-map').onclick = resetRwhMap;
   $('#rwh-open-tank').onclick = openQuickTank;
   bindRwhMapTools();
   $('#rwh-close').onclick = () => {
@@ -689,7 +620,7 @@ async function start() {
       }
     };
   });
-  scheduleHomeAdvance();
+  homeStory.start();
   try {
     const core = await loadAssets(paths);
     if (core.buildings.features.length !== 3583 || core.daily.length !== 10958 ||
@@ -709,7 +640,6 @@ async function start() {
     render();
     status.hidden = true;
     buttons.forEach(button => { button.disabled = false; });
-    if (homeAdvanceRequested) advanceHome();
   } catch (error) {
     status.setAttribute('role', 'alert');
     status.textContent = `Gagal memuat WebGIS. Buka melalui RUN_WINDOWS.bat atau server HTTP lokal. ${error.message}`;

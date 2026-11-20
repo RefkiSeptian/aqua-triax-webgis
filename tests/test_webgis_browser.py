@@ -17,7 +17,7 @@ def tab(page, name):
 
 
 def show_aid_layer(page):
-    page.get_by_role("button", name="Layer & legenda").click()
+    page.get_by_role("button", name="Layer peta").click()
     page.get_by_role("checkbox", name="Lokasi bantuan air").check()
     page.get_by_role("link", name="Lihat rincian bantuan air").click()
 
@@ -43,7 +43,7 @@ def tap_building(page, device, audited=False):
 
 def check_rwh_location(page, url):
     locate = page.get_by_role("button", name="Lokasi saya")
-    reset = page.get_by_role("button", name="Kembali ke seluruh Katongan")
+    expect(page.get_by_role("button", name="Kembali ke seluruh Katongan")).to_have_count(0)
     status = page.locator("#rwh-location-status")
     overview_zoom = page.evaluate("st.map.getZoom()")
     location = page.evaluate("""() => {
@@ -59,7 +59,7 @@ def check_rwh_location(page, url):
         st.map.distance(st.rwhLocationMarker.getLatLng(), [latitude, longitude]) < 1 &&
         st.map.distance(st.map.getCenter(), [latitude, longitude]) < 1
     """, location)
-    reset.click()
+    page.evaluate("resetRwhMap()")
     expect(status).to_be_empty()
     assert page.evaluate("!st.rwhLocationMarker && st.map.getZoom()") == overview_zoom
 
@@ -81,7 +81,7 @@ def check_rwh_location(page, url):
     }""")
     locate.click()
     expect(locate).to_be_disabled()
-    reset.click()
+    page.evaluate("resetRwhMap()")
     page.evaluate("coords => window.finishTestLocation({coords})", location)
     expect(status).to_be_empty()
     expect(locate).to_be_enabled()
@@ -95,20 +95,25 @@ def check_app(page, url, screenshots, device):
     page.goto(url, wait_until="domcontentloaded")
     expect(page.locator("#load-status")).to_be_hidden()
     expect(page.locator('nav[aria-label="Fitur utama"] button')).to_have_text([
-        "Dashboard", "Cek Kondisi Air", "Tentang"
+        "Beranda", "Dashboard", "Cek Kondisi Air", "Tentang"
     ])
     expect(page.locator("#home-view")).to_be_visible()
-    expect(page.locator(".home-photo img")).to_be_visible()
+    expect(page.locator("#home-story-canvas")).to_be_visible()
     expect(page.locator(".home-sdg")).to_contain_text(["Target 6.1 dan 6.4", "Target 13.1"])
     expect(page.locator(".masthead")).to_be_hidden()
-    page.keyboard.press("ArrowDown")
+    for key in ["harvest", "distribution", "quality"]:
+        page.locator(f"#story-{key}").evaluate("el => el.scrollIntoView({block: 'start'})")
+        expect(page.locator("#home-story")).to_have_attribute("data-story", key)
+        expect(page.locator("#home-view")).to_have_attribute("data-story", key)
+        expect(page.locator("#home-view")).to_be_visible()
+    page.locator(".story-dashboard").click()
     expect(page.locator(".masthead")).to_be_visible()
     tab(page, "about")
     expect(page.locator("#team-title")).to_be_visible()
-    page.get_by_role("button", name="Beranda AQUA TRIAX").click()
+    page.get_by_role("button", name="Beranda", exact=True).click()
     expect(page.locator("#home-title")).to_be_visible()
     expect(page.locator(".masthead")).to_be_hidden()
-    page.keyboard.press("ArrowDown")
+    page.locator(".home-entry-actions button").click()
     expect(page.locator('.main-tabs [data-tab="dashboard"]')).to_have_attribute("aria-current", "page")
     expect(page.locator('#dashboard-maps')).to_have_count(0)
     assert page.evaluate("typeof L !== 'undefined' && Boolean(st.map)")
@@ -118,7 +123,7 @@ def check_app(page, url, screenshots, device):
     expect(page.locator("#rwh-legend-slot #map-legend")).to_be_visible()
     expect(page.locator("#map-legend")).to_contain_text("m³/tahun")
     summary = page.locator("#dashboard-summary-content")
-    layer_button = page.get_by_role("button", name="Layer & legenda")
+    layer_button = page.get_by_role("button", name="Layer peta")
     close_tool = page.get_by_role("button", name="Tutup alat peta")
     expect(page.get_by_role("button", name="Lihat rincian", exact=True)).to_have_count(0)
     expect(page.get_by_role("button", name="Buka pilihan layer", exact=True)).to_have_count(0)
@@ -364,10 +369,11 @@ def check_app(page, url, screenshots, device):
     tab(page, "rwh")
     page.evaluate("() => { st.map.setZoom(15, {animate: false}); }")
     original_position = page.evaluate(map_position)
-    page.get_by_role("button", name="Layer & legenda").click()
+    page.get_by_role("button", name="Layer peta").click()
     aid_layer = page.get_by_role("checkbox", name="Lokasi bantuan air")
     roof_layer = page.get_by_role("checkbox", name="Potensi air hujan per bangunan")
-    layer_legend = page.locator("#rwh-tool-legend")
+    layer_legend = page.locator("#map-legend")
+    expect(page.locator("#rwh-tool-legend")).to_have_count(0)
     potential_range = page.get_by_role("combobox", name="Rentang potensi tampungan")
     expect(potential_range).to_have_value("")
     potential_range.select_option("150")
@@ -404,6 +410,10 @@ def check_app(page, url, screenshots, device):
     road_switch = page.get_by_role("checkbox", name="Jalan", exact=True)
     walk_roads = page.get_by_role("checkbox", name="Jalan pejalan kaki")
     drive_roads = page.get_by_role("checkbox", name="Jalan kendaraan")
+    expect(road_switch).to_be_checked()
+    expect(walk_roads).to_be_checked()
+    expect(drive_roads).to_be_checked()
+    road_switch.uncheck()
     expect(walk_roads).to_be_hidden()
     road_switch.check()
     expect(walk_roads).to_be_checked()
@@ -412,9 +422,9 @@ def check_app(page, url, screenshots, device):
     expect(road_fields.locator('label:has(input[data-road-type="walk"]) path')).to_have_attribute("stroke-dasharray", "8 7")
     expect(road_fields.locator('label:has(input[data-road-type="drive"]) path')).to_have_attribute("stroke-dasharray", "none")
     drive_roads.check()
-    expect(page.locator("#rwh-road-region-hint")).to_be_visible()
-    expect(layer_legend.locator(".road-legend-line")).to_have_count(0)
-    assert page.evaluate("!st.roadLayers.walk && !st.roadLayers.drive")
+    expect(page.locator("#rwh-road-region-hint")).to_be_hidden()
+    expect(layer_legend.locator(".road-legend-line")).to_have_count(2)
+    assert page.evaluate("st.map.hasLayer(st.roadLayers.walk) && st.map.hasLayer(st.roadLayers.drive)")
     assert page.evaluate(map_position) == original_position
     aid_layer.check()
     expect(layer_legend).to_contain_text("Lokasi bantuan terdahulu")
@@ -434,8 +444,9 @@ def check_app(page, url, screenshots, device):
     expect(layer_legend).not_to_contain_text("Lokasi bantuan terdahulu")
     assert page.evaluate("st.map.hasLayer(st.buildingLayer) && st.mdmcLayer === null")
     assert page.evaluate(map_position) == original_position
-    rainfall_layer = page.get_by_role("checkbox", name="Curah hujan rata-rata tahunan")
+    rainfall_layer = page.get_by_role("checkbox", name="Curah hujan rata-rata")
     rainfall_legend = page.locator("#rainfall-legend")
+    expect(rainfall_layer).not_to_be_checked()
     expect(rainfall_legend).to_be_hidden()
     rainfall_layer.check()
     expect(rainfall_legend).to_be_visible()
@@ -450,8 +461,12 @@ def check_app(page, url, screenshots, device):
     regency = page.get_by_role("combobox", name="Kabupaten/Kota")
     district = page.get_by_role("combobox", name="Kecamatan/Kapanewon")
     kalurahan = page.get_by_role("combobox", name="Desa/Kalurahan")
+    expect(boundary).to_be_checked()
+    expect(kalurahan).to_have_value("Katongan")
+    assert page.evaluate("st.map.hasLayer(st.outline)")
+    province.select_option("")
+    boundary.uncheck()
     expect(province).to_be_hidden()
-    assert page.evaluate("!st.map.hasLayer(st.outline)")
     boundary.check()
     expect(province).to_be_visible()
     expect(regency).to_be_disabled()
@@ -459,7 +474,7 @@ def check_app(page, url, screenshots, device):
     province.select_option("Daerah Istimewa Yogyakarta")
     regency.select_option("Gunungkidul")
     district.select_option("Nglipar")
-    assert page.evaluate("!st.map.hasLayer(st.outline) && !st.roadLayers.drive")
+    assert page.evaluate("!st.map.hasLayer(st.outline) && !st.map.hasLayer(st.roadLayers.drive)")
     kalurahan.select_option("Katongan")
     expect(page.locator("#rwh-road-region-hint")).to_be_hidden()
     expect(layer_legend.locator('.road-legend-line path[stroke-dasharray="8 7"][stroke-linecap="butt"]')).to_have_count(1)
@@ -483,13 +498,15 @@ def check_app(page, url, screenshots, device):
     page.get_by_role("button", name="Tutup alat peta").click()
     legend_box, map_box = rainfall_legend.bounding_box(), top_map.bounding_box()
     assert legend_box["x"] - map_box["x"] < 20
-    assert map_box["y"] + map_box["height"] - legend_box["y"] - legend_box["height"] < 20
+    guide_box = page.locator(".rwh-map-guide").bounding_box()
+    assert guide_box["y"] <= legend_box["y"]
+    assert legend_box["y"] + legend_box["height"] <= guide_box["y"] + guide_box["height"]
     page.evaluate("""() => {
         const cell = st.rainfallLayer.getLayers().find(layer => layer.feature.properties.rain_mm_annual < 1900);
         cell.fire('click', {latlng: cell.getBounds().getCenter()});
     }""")
     expect(page.locator(".leaflet-popup-content")).to_contain_text("1.881,2 mm/tahun")
-    page.get_by_role("button", name="Layer & legenda").click()
+    page.get_by_role("button", name="Layer peta").click()
     expect(kalurahan).to_have_value("Katongan")
     page.wait_for_function("!st.map._panAnim?._inProgress")
     before_clear = page.evaluate(map_position)
@@ -533,7 +550,7 @@ def check_app(page, url, screenshots, device):
     expect(page.locator("#site-method")).to_have_value("euclidean")
     page.locator("#site-method").select_option("network")
     expect(page.locator("#site-method")).to_have_value("network")
-    page.get_by_role("button", name="Layer & legenda").click()
+    page.get_by_role("button", name="Layer peta").click()
     coverage.check()
     expect(page.locator("#rwh-coverage-summary")).to_contain_text("95,84%")
     assert page.evaluate("st.circlesLayer.getLayers().length === 11 && !st.assignmentLayer")
@@ -611,7 +628,7 @@ def check_app(page, url, screenshots, device):
     expect(page.locator("#distribution-metrics")).to_contain_text("87,78%")
     page.locator("#toggle-planning").click()
     expect(page.locator("#distribution-details")).to_contain_text("5.000 liter")
-    page.get_by_role("button", name="Layer & legenda").click()
+    page.get_by_role("button", name="Layer peta").click()
     coverage.uncheck()
     page.get_by_role("button", name="Tutup alat peta").click()
     assert page.evaluate("!st.siteLayer && st.mdmcLayer.getLayers().length === 1")
@@ -821,8 +838,8 @@ def check_failure_states(browser, url):
     page.goto(url, wait_until="domcontentloaded")
     expect(page.locator("#load-status")).to_be_hidden()
     tab(page, "dashboard")
-    page.get_by_role("button", name="Layer & legenda").click()
-    page.get_by_role("checkbox", name="Curah hujan rata-rata tahunan").check()
+    page.get_by_role("button", name="Layer peta").click()
+    page.get_by_role("checkbox", name="Curah hujan rata-rata").check()
     expect(page.locator("#rwh-rainfall-status")).to_contain_text("belum bisa dimuat")
     expect(page.locator("#rainfall-legend")).to_be_hidden()
     page.unroute(rainfall_path)

@@ -21,11 +21,11 @@ const rwhBasemaps = {
   hybrid: {label: 'Satelit dengan label', preview: esriTile(esriImagery, katonganPreview)},
   topo: {label: 'Topografi', preview: esriTile(esriTopography, katonganPreview)}
 };
-const rwhToolTitles = {basemap: 'Peta dasar', layers: 'Layer & legenda', measure: 'Alat ukur'};
+const rwhToolTitles = {basemap: 'Peta dasar', layers: 'Layer peta', measure: 'Alat ukur'};
 const rwhMeasurement = {points: [], finished: false};
 const roadTypes = {
-  walk: {label: 'Jalan pejalan kaki', data: 'walkRoads', style: {color: '#227bb4', weight: 3, opacity: 0.9, dashArray: '8 7', lineCap: 'butt'}},
-  drive: {label: 'Jalan kendaraan', data: 'driveRoads', style: {color: '#8549b7', weight: 2, opacity: 0.95}}
+  walk: {label: 'Jalan pejalan kaki', data: 'walkRoads', style: {color: '#8b4513', weight: 3, opacity: 1, dashArray: '8 7', lineCap: 'butt'}},
+  drive: {label: 'Jalan kendaraan', data: 'driveRoads', style: {color: '#202020', weight: 2, opacity: 1}}
 };
 const roadNetworkCredit = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (jaringan jalan)';
 
@@ -87,6 +87,7 @@ function syncRwhBasemap() {
 function syncRwhLayers() {
   if (st.showRwhBuildings === false) st.buildingLayer.remove();
   else st.buildingLayer.addTo(st.map);
+  if (st.showRainfall && !st.rainfallLayer && !st.rainfallError) loadRainfallLayer();
   syncRainfallLayer();
   syncKalurahanBoundary();
 }
@@ -133,6 +134,7 @@ async function loadRainfallLayer() {
     const colorAt = fraction => `rgb(${light.map((value, index) =>
       Math.round(value + fraction * (dark[index] - value))).join(',')})`;
     st.rainfallLayer = L.geoJSON(data, {
+      pane: 'rainfall',
       style: ({properties}) => ({
         color: '#255c85', weight: 1, fillOpacity: 0.74,
         fillColor: colorAt((properties.rain_mm_annual - min) / (max - min))
@@ -249,7 +251,7 @@ function openRwhMapTool(key) {
         </select>
       </div>
       <label class="checkline"><input type="checkbox" name="showRainfall"
-      ${st.showRainfall ? 'checked' : ''}> Curah hujan rata-rata tahunan</label>
+      ${st.showRainfall ? 'checked' : ''}> Curah hujan rata-rata</label>
       <p id="rwh-rainfall-status" role="status"></p>
       <button class="section-link" id="retry-rainfall-layer" type="button" hidden>Muat ulang curah hujan</button>
       <label class="checkline"><input type="checkbox" name="showAidLocations"
@@ -284,9 +286,7 @@ function openRwhMapTool(key) {
             <option value="${esc(region[key])}">${esc(region[key])}</option>
           </select>
         </div>`).join('')}
-      </fieldset>
-      <h3 class="rwh-tool-legend-title">Legenda layer aktif</h3>
-      <div class="map-legend" id="rwh-tool-legend"></div>`;
+      </fieldset>`;
     $('#retry-rainfall-layer').onclick = () => {
       $('[name="showRainfall"]').focus();
       loadRainfallLayer();
