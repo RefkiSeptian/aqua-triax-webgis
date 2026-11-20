@@ -5,7 +5,7 @@ const homeStory = (() => {
   const root = document.querySelector('#home-story');
   const steps = [...root.querySelectorAll('[data-story-step]')];
   const sections = [home.querySelector('.home-hero'), ...steps];
-  const chapters = [...root.querySelectorAll('.story-chapters a')];
+  const chapters = [...home.querySelectorAll('.story-chapters a')];
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const scene = createHomeScene(home.querySelector('canvas'));
   let listening = false;
@@ -22,9 +22,7 @@ const homeStory = (() => {
     }
     scene.setProgress(progress);
 
-    const bounds = root.getBoundingClientRect();
-    root.classList.toggle('is-reading', bounds.top <= 1 && bounds.bottom > 0);
-    const active = steps.reduce((closest, step) => {
+    const active = sections.reduce((closest, step) => {
       const distance = element => {
         const rect = element.getBoundingClientRect();
         return Math.abs(rect.top + rect.height / 2 - innerHeight / 2);
@@ -32,7 +30,7 @@ const homeStory = (() => {
       return distance(step) < distance(closest) ? step : closest;
     });
     root.dataset.story = active.dataset.storyStep;
-    home.dataset.story = positions[1] > innerHeight * .55 ? 'intro' : active.dataset.storyStep;
+    home.dataset.story = active.dataset.storyStep;
     steps.forEach(step => step.classList.toggle('is-current', step === active));
     chapters.forEach(chapter => {
       if (chapter.hash === `#${active.id}`) chapter.setAttribute('aria-current', 'step');
@@ -50,7 +48,7 @@ const homeStory = (() => {
       event.preventDefault();
       const target = document.querySelector(link.hash);
       target.scrollIntoView({behavior: motion.matches ? 'instant' : 'smooth', block: 'start'});
-      const heading = target.querySelector('h2');
+      const heading = target.querySelector('h1, h2');
       heading.setAttribute('tabindex', '-1');
       heading.focus({preventScroll: true});
     });
@@ -72,7 +70,6 @@ const homeStory = (() => {
       cancelAnimationFrame(frame);
       frame = undefined;
       listening = false;
-      root.classList.remove('is-reading');
       scene.stop();
     }
   };

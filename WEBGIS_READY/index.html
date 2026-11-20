@@ -18,7 +18,7 @@
       <canvas class="rain-background-fall"></canvas>
       <div class="rain-background-lightning"></div>
     </div>
-    <header class="masthead" hidden>
+    <header class="masthead masthead-home">
       <button type="button" class="brand" data-tab="home" aria-label="Beranda AQUA TRIAX" aria-current="page">
         <img class="brand-logo" src="assets/katongan-logo.svg" width="450" height="235" alt="AQUA TRIAX" />
       </button>
@@ -33,21 +33,13 @@
       <div class="home-story-stage" aria-hidden="true">
         <canvas id="home-story-canvas"></canvas>
         <div class="home-scene-shade"></div>
+        <div class="home-scene-cue"><strong></strong><span>Ilustrasi proses</span></div>
       </div>
-      <section class="home-hero" aria-labelledby="home-title">
+      <section id="story-intro" class="home-hero" data-story-step="intro" aria-labelledby="home-title">
         <div class="home-hero-copy">
           <p class="home-brand-name">AQUA TRIAX</p>
-          <h1 id="home-title" tabindex="-1">Setiap tetes punya<br>perjalanan.</h1>
-          <p>AQUA TRIAX membantu Anda memperkirakan tampungan air hujan, melihat riwayat penyaluran bantuan, dan mengetahui langkah awal saat kondisi air berubah.</p>
-          <div class="home-entry-actions">
-            <button type="button" class="primary" data-tab="dashboard">Buka Dashboard <span aria-hidden="true">↗</span></button>
-            <a href="#home-story" data-story-link>Jelajahi ceritanya <span aria-hidden="true">↓</span></a>
-          </div>
-          <ul class="home-feature-list">
-            <li>Potensi Air Hujan</li>
-            <li>Lokasi Bantuan Air</li>
-            <li>Cek Kondisi Air</li>
-          </ul>
+          <h1 id="home-title" tabindex="-1">Hujan berhenti.<br>Kebutuhan air terus berjalan.</h1>
+          <p>Memasak, mencuci, dan mandi tetap membutuhkan air. AQUA TRIAX membantu mengenali peluang menampung hujan, melihat akses bantuan, dan mencatat kondisi air di rumah.</p>
           <div class="home-sdg-list" role="group" aria-label="Kontribusi terhadap SDGs">
             <a class="home-sdg" href="https://sdgs.un.org/goals/goal6">
               <img src="assets/sdg-06.svg" width="46" height="46" alt="">
@@ -66,40 +58,48 @@
           <span>Gulir untuk mengikuti perjalanan air</span>
         </a>
       </section>
-      <section id="home-story" class="home-story" data-story="harvest" aria-label="Perjalanan air bersama AQUA TRIAX">
+      <section id="home-story" class="home-story" data-story="intro" aria-label="Perjalanan air bersama AQUA TRIAX">
         <div class="home-story-content">
           <section id="story-harvest" class="home-story-step" data-story-step="harvest" aria-labelledby="story-harvest-title">
             <div class="story-copy">
               <p class="story-kicker">Potensi air hujan</p>
-              <h2 id="story-harvest-title">Berawal dari atap.<br>Menjadi persediaan.</h2>
-              <p>Air yang jatuh di atap punya peluang untuk ditampung. Luas atap dan curah hujan membantu memperkirakan berapa banyak yang bisa dikumpulkan.</p>
-              <p class="story-feature">Ketuk bangunan di peta, lalu hitung kebutuhan tandon sesuai jumlah penghuni rumah.</p>
+              <h2 id="story-harvest-title">Saat hujan datang,<br>mulai dari atap rumah.</h2>
+              <p>Air mengikuti kemiringan atap menuju talang. Aliran awal dialihkan terlebih dahulu, kemudian air berikutnya masuk ke tandon.</p>
+              <p class="story-feature">Peta potensi air hujan membantu memperkirakan tampungan dari setiap bangunan.</p>
+            </div>
+          </section>
+          <section id="story-storage" class="home-story-step" data-story-step="storage" aria-labelledby="story-storage-title">
+            <div class="story-copy">
+              <p class="story-kicker">Kebutuhan tampungan</p>
+              <h2 id="story-storage-title">Berapa lama<br>persediaannya cukup?</h2>
+              <p>Bandingkan dua ukuran tandon saat air masuk dan digunakan di rumah. Dengan pemakaian yang sama, kapasitas tampungan memengaruhi berapa lama persediaan bertahan.</p>
+              <p class="story-feature">Di Dashboard, pilih bangunan atau masukkan luas atap, jumlah penghuni, dan ukuran tandon untuk mencoba perhitungannya.</p>
             </div>
           </section>
           <section id="story-distribution" class="home-story-step" data-story-step="distribution" aria-labelledby="story-distribution-title">
             <div class="story-copy">
               <p class="story-kicker">Lokasi bantuan air</p>
-              <h2 id="story-distribution-title">Saat air terbatas,<br>lihat jangkauannya.</h2>
-              <p>Riwayat bantuan membantu melihat di mana air pernah disalurkan. Jalan dan zona cakupan memberi konteks untuk memahami akses di sekitarnya.</p>
-              <p class="story-feature">Aktifkan layer bantuan di Dashboard untuk menelusuri lokasi dan melihat simulasi cakupannya.</p>
+              <h2 id="story-distribution-title">Saat persediaan kurang,<br>kenali akses bantuan.</h2>
+              <p>Persediaan rumah dapat memerlukan pasokan dari sumber lain. Riwayat penyaluran membantu melihat lokasi yang pernah menerima bantuan air.</p>
+              <p class="story-feature">Telusuri layer bantuan, jaringan jalan, dan simulasi cakupan di peta untuk memahami akses di sekitarnya.</p>
             </div>
           </section>
           <section id="story-quality" class="home-story-step" data-story-step="quality" aria-labelledby="story-quality-title">
             <div class="story-copy">
               <p class="story-kicker">Cek kondisi air</p>
-              <h2 id="story-quality-title">Kenali airnya.<br>Tentukan langkah berikutnya.</h2>
-              <p>Ikuti pemeriksaan dari tandon hingga air yang akan digunakan. Amati bau, warna, dan kejernihan, lalu tinjau temuan Anda.</p>
-              <p class="story-feature">Panduan Cek Kondisi Air membantu mencatat kondisi yang terlihat dan menampilkan rekomendasi pemeriksaan berikutnya.</p>
-              <button type="button" class="primary story-dashboard" data-tab="dashboard">Buka Dashboard <span aria-hidden="true">↗</span></button>
+              <h2 id="story-quality-title">Sebelum digunakan,<br>kenali kondisi airnya.</h2>
+              <p>Mulai dari tutup tandon dan keran, lalu amati sampel air. Perhatikan perubahan warna, partikel, dan bau, kemudian catat temuan untuk pemeriksaan berikutnya.</p>
             </div>
           </section>
         </div>
-        <nav class="story-chapters" aria-label="Bagian cerita">
-          <a href="#story-harvest" data-story-link aria-current="step">Air hujan</a>
-          <a href="#story-distribution" data-story-link>Bantuan air</a>
-          <a href="#story-quality" data-story-link>Kondisi air</a>
-        </nav>
       </section>
+      <nav class="story-chapters" aria-label="Urutan cerita Beranda">
+        <a href="#story-intro" data-story-link aria-current="step"><span>Kebutuhan</span><span class="story-chapter-number" aria-hidden="true">01</span></a>
+        <a href="#story-harvest" data-story-link><span>Hujan</span><span class="story-chapter-number" aria-hidden="true">02</span></a>
+        <a href="#story-storage" data-story-link><span>Tandon</span><span class="story-chapter-number" aria-hidden="true">03</span></a>
+        <a href="#story-distribution" data-story-link><span>Bantuan</span><span class="story-chapter-number" aria-hidden="true">04</span></a>
+        <a href="#story-quality" data-story-link><span>Kondisi air</span><span class="story-chapter-number" aria-hidden="true">05</span></a>
+      </nav>
     </main>
     <main id="about-view" class="project-page project-about" data-team-photo="1" hidden>
       <section class="team-section" aria-labelledby="team-title">

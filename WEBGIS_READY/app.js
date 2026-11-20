@@ -352,7 +352,7 @@ function render() {
   stopQualityPipeFlow();
   const home = st.tab === 'home';
   const about = st.tab === 'about';
-  $('.masthead').hidden = home;
+  $('.masthead').classList.toggle('masthead-home', home);
   $('#home-view').hidden = !home;
   if (home) homeStory.start();
   else homeStory.stop();
